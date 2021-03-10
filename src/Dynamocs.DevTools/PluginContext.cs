@@ -1,8 +1,7 @@
-﻿using System;
-using Microsoft.Xrm.Sdk;
-using OrgServiz;
+﻿using Microsoft.Xrm.Sdk;
+using System;
 
-namespace PluginBase
+namespace Dynamocs.DevTools
 {
 	public class PluginContext
 	{

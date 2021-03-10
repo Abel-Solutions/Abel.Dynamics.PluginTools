@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dynamocs.DevTools;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using Moq;
-using OrgServiz;
-using Reflex;
 
-namespace NotDynamocs
+namespace Dynamocs.TestTools
 {
 	public class Dynamocs
 	{

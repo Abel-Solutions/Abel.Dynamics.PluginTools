@@ -1,12 +1,10 @@
 using System;
-using Plugins;
-using NotDynamocs;
 using Microsoft.Xrm.Sdk;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests
+namespace Dynamocs.DevTools.Tests
 {
 	public class PluginTests : TestBase
 	{
@@ -23,10 +21,10 @@ namespace Tests
 				Id = Guid.NewGuid()
 			};
 
-			var dynamocs = new Dynamocs();
+			var dynamocs = new TestTools.Dynamocs();
 			dynamocs.Initialize(account);
 
-			dynamocs.ExecutePlugin<Plugin>(account, "update");
+			dynamocs.ExecutePlugin<TestPlugin>(account, "update");
 
 			var maybeUpdatedAccount = dynamocs.GetRecord(account.Id);
 			Assert.Equal("foo", maybeUpdatedAccount["name"]);

@@ -1,12 +1,11 @@
 using System;
-using NotDynamocs;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests
+namespace Dynamocs.DevTools.Tests
 {
 	public class OrgServiceTests : TestBase
 	{
@@ -23,7 +22,7 @@ namespace Tests
 				Id = Guid.NewGuid()
 			};
 
-			var dynamocs = new Dynamocs();
+			var dynamocs = new Dynamocs.TestTools.Dynamocs();
 			dynamocs.Initialize(account);
 
 			var retrievedAccount = dynamocs.OrgService.Retrieve("account", account.Id);

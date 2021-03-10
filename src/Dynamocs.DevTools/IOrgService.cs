@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using System;
+using System.Collections.Generic;
 
-namespace OrgServiz
+namespace Dynamocs.DevTools
 {
 	public interface IOrgService : IOrganizationService
 	{

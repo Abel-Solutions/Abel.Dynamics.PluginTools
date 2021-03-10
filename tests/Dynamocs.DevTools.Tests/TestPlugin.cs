@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xrm.Sdk;
-using PluginBase;
 
-namespace Plugins
+namespace Dynamocs.DevTools.Tests
 {
-    public class Plugin : PluginBase.PluginBase
+    public class TestPlugin : PluginBase
     {
         public override void Execute(PluginContext context)
         {
