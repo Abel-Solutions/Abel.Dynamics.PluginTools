@@ -1,6 +1,8 @@
 using System;
 using NotDynamocs;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
+using Moq;
 using OrgServiz;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +17,7 @@ namespace Tests
 		}
 
 		[Fact]
-		public void Retrieve()
+		public void Retrieve_VerifyRetrieveWasCalled()
 		{
 			var account = new Entity("account")
 			{
@@ -29,6 +31,8 @@ namespace Tests
 
 			var retrievedAccount = orgService.Retrieve("account", account.Id);
 			Assert.Equal(account.Id, retrievedAccount.Id);
+
+			dynamocs.OrganizationService.Verify(o => o.Retrieve("account", account.Id, It.IsAny<ColumnSet>()), Times.Once);
 		}
 	}
 }

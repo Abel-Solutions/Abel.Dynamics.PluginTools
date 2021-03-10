@@ -16,7 +16,7 @@ namespace Tests
 		}
 
 		[Fact]
-		public void Foo()
+		public void RunPlugin_VerifyUpdateWasCalled()
 		{
 			var account = new Entity("account")
 			{

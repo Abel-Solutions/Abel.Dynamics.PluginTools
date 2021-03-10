@@ -24,6 +24,43 @@ namespace NotDynamocs
 
 		public Dynamocs()
 		{
+			SetupOrganizationService();
+
+			SetupServiceFactory();
+
+			SetupServiceProvider();
+
+			SetupTracingService();
+		}
+
+		public void ExecutePlugin<TPlugin>(Entity target, string messageName = "create", Guid? userId = null)
+			where TPlugin : IPlugin
+		{
+			SetupExecutionContext(target, messageName, userId);
+
+			Activator.CreateInstance<TPlugin>().Execute(ServiceProvider.Object);
+		}
+
+		public void Initialize(params Entity[] records) => Records = records.ToDictionary(r => r.Id, r => r);
+
+		public TEntity GetRecord<TEntity>()
+			where TEntity : Entity =>
+			GetRecord(Activator.CreateInstance<TEntity>().LogicalName)?.ToEntity<TEntity>();
+
+		public TEntity GetRecord<TEntity>(Guid id)
+			where TEntity : Entity =>
+			GetRecord(id)?.ToEntity<TEntity>();
+
+		public Entity GetRecord(Guid id) =>
+			Records.ContainsKey(id) ? Records[id] : null;
+
+		public Entity GetRecord(string entityName) =>
+			Records
+				.Select(r => r.Value)
+				.FirstOrDefault(r => r.LogicalName == entityName);
+
+		private void SetupOrganizationService()
+		{
 			OrganizationService.Setup(s => s.Create(It.IsAny<Entity>()))
 				.Callback((Entity e) =>
 				{
@@ -51,10 +88,10 @@ namespace NotDynamocs
 						.ToList();
 					return new EntityCollection(records);
 				});
+		}
 
-			ServiceFactory.Setup(s => s.CreateOrganizationService(It.IsAny<Guid>()))
-				.Returns(OrganizationService.Object);
-
+		private void SetupServiceProvider()
+		{
 			ServiceProvider.Setup(s => s.GetService(typeof(ITracingService)))
 				.Returns(TracingService.Object);
 
@@ -63,13 +100,9 @@ namespace NotDynamocs
 
 			ServiceProvider.Setup(s => s.GetService(typeof(IOrganizationServiceFactory)))
 				.Returns(ServiceFactory.Object);
-
-			TracingService.Setup(s => s.Trace(It.IsAny<string>(), It.IsAny<object[]>()))
-				.Callback((string s, object[] p) => Console.WriteLine(s));
 		}
 
-		public void ExecutePlugin<TPlugin>(Entity target, string messageName = "create", Guid? userId = null)
-			where TPlugin : IPlugin
+		private void SetupExecutionContext(Entity target, string messageName, Guid? userId)
 		{
 			ExecutionContext.Setup(s => s.InputParameters)
 				.Returns(new ParameterCollection { { "Target", target } });
@@ -79,27 +112,14 @@ namespace NotDynamocs
 
 			ExecutionContext.Setup(s => s.UserId)
 				.Returns(userId ?? Guid.NewGuid());
-
-			Activator.CreateInstance<TPlugin>()
-				.Execute(ServiceProvider.Object);
 		}
 
-		public void Initialize(params Entity[] records) => Records = records.ToDictionary(r => r.Id, r => r);
+		private void SetupTracingService() =>
+			TracingService.Setup(s => s.Trace(It.IsAny<string>(), It.IsAny<object[]>()))
+				.Callback((string s, object[] p) => Console.WriteLine(s));
 
-		public TEntity GetRecord<TEntity>()
-			where TEntity : Entity =>
-			GetRecord(Activator.CreateInstance<TEntity>().LogicalName)?.ToEntity<TEntity>();
-
-		public TEntity GetRecord<TEntity>(Guid id)
-			where TEntity : Entity =>
-			GetRecord(id)?.ToEntity<TEntity>();
-
-		public Entity GetRecord(Guid id) =>
-			Records.ContainsKey(id) ? Records[id] : null;
-
-		public Entity GetRecord(string entityName) =>
-			Records
-				.Select(r => r.Value)
-				.FirstOrDefault(r => r.LogicalName == entityName);
+		private void SetupServiceFactory() =>
+			ServiceFactory.Setup(s => s.CreateOrganizationService(It.IsAny<Guid>()))
+				.Returns(OrganizationService.Object);
 	}
 }
