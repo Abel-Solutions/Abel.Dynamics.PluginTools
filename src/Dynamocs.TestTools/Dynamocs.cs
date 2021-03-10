@@ -4,21 +4,21 @@ using System.Linq;
 using Dynamocs.DevTools;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
-using Moq;
+using NSubstitute;
 
 namespace Dynamocs.TestTools
 {
 	public class Dynamocs
 	{
-		public Mock<ITracingService> MockTracingService { get; } = new Mock<ITracingService>();
+		public ITracingService TracingService { get; } = Substitute.For<ITracingService>();
 
-		public Mock<IPluginExecutionContext> MockExecutionContext { get; } = new Mock<IPluginExecutionContext>();
+		public IPluginExecutionContext ExecutionContext { get; } = Substitute.For<IPluginExecutionContext>();
 
-		public Mock<IOrganizationServiceFactory> MockServiceFactory { get; } = new Mock<IOrganizationServiceFactory>();
+		public IOrganizationServiceFactory ServiceFactory { get; } = Substitute.For<IOrganizationServiceFactory>();
 
-		public Mock<IServiceProvider> MockServiceProvider { get; } = new Mock<IServiceProvider>();
+		public IServiceProvider ServiceProvider { get; } = Substitute.For<IServiceProvider>();
 
-		public Mock<IOrganizationService> MockOrganizationService { get; } = new Mock<IOrganizationService>();
+		public IOrganizationService OrganizationService { get; } = Substitute.For<IOrganizationService>();
 
 		private readonly Dictionary<Guid, Entity> _records = new Dictionary<Guid, Entity>();
 
@@ -38,7 +38,7 @@ namespace Dynamocs.TestTools
 		{
 			SetupExecutionContext(target, messageName, userId);
 
-			Activator.CreateInstance<TPlugin>().Execute(MockServiceProvider.Object);
+			Activator.CreateInstance<TPlugin>().Execute(ServiceProvider);
 		}
 
 		public void Initialize(params Entity[] records) => records.ToList().ForEach(AddRecord);
@@ -67,23 +67,20 @@ namespace Dynamocs.TestTools
 
 		private void SetupOrganizationService()
 		{
-			MockOrganizationService.Setup(s => s.Create(It.IsAny<Entity>()))
-				.Callback((Entity e) => AddRecord(e))
-				.Returns((Entity e) => e.Id);
+			OrganizationService.Create(Arg.Do<Entity>(AddRecord))
+				.Returns(args => args.Arg<Entity>().Id);
 
-			MockOrganizationService.Setup(s => s.Update(It.IsAny<Entity>()))
-				.Callback((Entity e) => _records[e.Id] = e);
+			OrganizationService.Update(Arg.Do<Entity>(e => _records[e.Id] = e));
 
-			MockOrganizationService.Setup(s => s.Delete(It.IsAny<string>(), It.IsAny<Guid>()))
-				.Callback((string entityName, Guid id) => _records.Remove(id));
+			OrganizationService.Delete(Arg.Any<string>(), Arg.Do<Guid>(id => _records.Remove(id)));
 
-			MockOrganizationService.Setup(s => s.Retrieve(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<ColumnSet>()))
-				.Returns((string entityName, Guid id, ColumnSet columnSet) => _records[id]);
+			OrganizationService.Retrieve(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<ColumnSet>())
+				.Returns(args => _records[args.Arg<Guid>()]);
 
-			MockOrganizationService.Setup(s => s.RetrieveMultiple(It.IsAny<QueryBase>()))
-				.Returns((QueryBase query) =>
+			OrganizationService.RetrieveMultiple(Arg.Any<QueryBase>())
+				.Returns(args =>
 				{
-					var entityName = query.GetValue<string>("EntityName");
+					var entityName = args.Arg<QueryBase>().GetValue<string>("EntityName");
 					var records = _records
 						.Where(r => r.Value.LogicalName == entityName) // todo this is crap
 						.Select(r => r.Value)
@@ -94,34 +91,30 @@ namespace Dynamocs.TestTools
 
 		private void SetupServiceProvider()
 		{
-			MockServiceProvider.Setup(s => s.GetService(typeof(ITracingService)))
-				.Returns(MockTracingService.Object);
+			ServiceProvider.GetService(typeof(ITracingService))
+				.Returns(TracingService);
 
-			MockServiceProvider.Setup(s => s.GetService(typeof(IPluginExecutionContext)))
-				.Returns(MockExecutionContext.Object);
+			ServiceProvider.GetService(typeof(IPluginExecutionContext))
+				.Returns(ExecutionContext);
 
-			MockServiceProvider.Setup(s => s.GetService(typeof(IOrganizationServiceFactory)))
-				.Returns(MockServiceFactory.Object);
+			ServiceProvider.GetService(typeof(IOrganizationServiceFactory))
+				.Returns(ServiceFactory);
 		}
 
 		private void SetupExecutionContext(Entity target, string messageName, Guid? userId)
 		{
-			MockExecutionContext.Setup(s => s.InputParameters)
-				.Returns(new ParameterCollection { { "Target", target } });
+			ExecutionContext.InputParameters.Returns(new ParameterCollection { { "Target", target } });
 
-			MockExecutionContext.Setup(s => s.MessageName)
-				.Returns(messageName);
+			ExecutionContext.MessageName.Returns(messageName);
 
-			MockExecutionContext.Setup(s => s.UserId)
-				.Returns(userId ?? Guid.NewGuid());
+			ExecutionContext.UserId.Returns(userId ?? Guid.NewGuid());
 		}
 
 		private void SetupTracingService() =>
-			MockTracingService.Setup(s => s.Trace(It.IsAny<string>(), It.IsAny<object[]>()))
-				.Callback((string s, object[] p) => Console.WriteLine(s));
+			TracingService.Trace(Arg.Do<string>(Console.WriteLine), Arg.Any<object[]>());
 
 		private void SetupServiceFactory() =>
-			MockServiceFactory.Setup(s => s.CreateOrganizationService(It.IsAny<Guid>()))
-				.Returns(MockOrganizationService.Object);
+			ServiceFactory.CreateOrganizationService(Arg.Any<Guid>())
+				.Returns(OrganizationService);
 	}
 }

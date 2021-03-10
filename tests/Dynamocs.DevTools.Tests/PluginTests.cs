@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Xrm.Sdk;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,7 +33,7 @@ namespace Dynamocs.DevTools.Tests
 			Assert.Equal("bar2", maybeCreatedLol["name"]);
 			Assert.NotEqual(Guid.Empty, maybeCreatedLol.Id);
 
-			dynamocs.MockOrganizationService.Verify(s => s.Update(It.IsAny<Entity>()), Times.Once);
+			dynamocs.OrganizationService.Received().Update(Arg.Any<Entity>());
 		}
 	}
 }

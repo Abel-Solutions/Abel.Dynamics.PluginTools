@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using Moq;
+using NSubstitute;
 using Xunit.Abstractions;
 
 namespace Dynamocs.DevTools.Tests
@@ -9,10 +9,9 @@ namespace Dynamocs.DevTools.Tests
 	{
 		public TestBase(ITestOutputHelper output)
 		{
-			var textWriter = new Mock<TextWriter>();
-			textWriter.Setup(t => t.WriteLine(It.IsAny<string>()))
-				.Callback((string s) => output.WriteLine(s));
-			Console.SetOut(textWriter.Object);
+			var textWriter = Substitute.For<TextWriter>();
+			textWriter.WriteLine(Arg.Do<string>(output.WriteLine));
+			Console.SetOut(textWriter);
 		}
 	}
 }

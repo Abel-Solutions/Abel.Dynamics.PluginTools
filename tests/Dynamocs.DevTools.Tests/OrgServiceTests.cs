@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,10 +25,10 @@ namespace Dynamocs.DevTools.Tests
 			var dynamocs = new TestTools.Dynamocs();
 			dynamocs.Initialize(account);
 
-			var retrievedAccount = dynamocs.MockOrganizationService.Object.Retrieve("account", account.Id);
+			var retrievedAccount = dynamocs.OrganizationService.Retrieve("account", account.Id);
 			Assert.Equal(account.Id, retrievedAccount.Id);
 
-			dynamocs.MockOrganizationService.Verify(o => o.Retrieve("account", account.Id, It.IsAny<ColumnSet>()), Times.Once);
+			dynamocs.OrganizationService.Received().Retrieve("account", account.Id, Arg.Any<ColumnSet>());
 		}
 	}
 }
