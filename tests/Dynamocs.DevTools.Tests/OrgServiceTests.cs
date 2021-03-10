@@ -22,10 +22,10 @@ namespace Dynamocs.DevTools.Tests
 				Id = Guid.NewGuid()
 			};
 
-			var dynamocs = new Dynamocs.TestTools.Dynamocs();
+			var dynamocs = new TestTools.Dynamocs();
 			dynamocs.Initialize(account);
 
-			var retrievedAccount = dynamocs.OrgService.Retrieve("account", account.Id);
+			var retrievedAccount = dynamocs.MockOrganizationService.Object.Retrieve("account", account.Id);
 			Assert.Equal(account.Id, retrievedAccount.Id);
 
 			dynamocs.MockOrganizationService.Verify(o => o.Retrieve("account", account.Id, It.IsAny<ColumnSet>()), Times.Once);

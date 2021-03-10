@@ -20,14 +20,10 @@ namespace Dynamocs.TestTools
 
 		public Mock<IOrganizationService> MockOrganizationService { get; } = new Mock<IOrganizationService>();
 
-		public IOrgService OrgService { get; }
-
 		private readonly Dictionary<Guid, Entity> _records = new Dictionary<Guid, Entity>();
 
 		public Dynamocs()
 		{
-			OrgService = new OrgService(MockOrganizationService.Object);
-
 			SetupOrganizationService();
 
 			SetupServiceFactory();
