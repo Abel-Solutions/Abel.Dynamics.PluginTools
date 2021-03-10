@@ -29,5 +29,7 @@ namespace OrgServiz
 
 		TEntity Retrieve<TEntity>(Guid id, ColumnSet columnSet = null)
 			where TEntity : Entity;
+
+		Entity Retrieve(string entityName, Guid id);
 	}
 }

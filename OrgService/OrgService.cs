@@ -56,11 +56,12 @@ namespace OrgServiz
 
 		public TEntity Retrieve<TEntity>(Guid id, ColumnSet columnSet = null)
 			where TEntity : Entity =>
-			Retrieve(Activator.CreateInstance<TEntity>().LogicalName, id, columnSet)
+			_orgService.Retrieve(Activator.CreateInstance<TEntity>().LogicalName, id, columnSet)
 				.ToEntity<TEntity>();
 
-		public Entity Retrieve(string entityName, Guid id, ColumnSet columnSet = null) =>
-			_orgService.Retrieve(entityName, id, columnSet);
+		public Entity Retrieve(string entityName, Guid id) => Retrieve(entityName, id, null);
+
+		public Entity Retrieve(string entityName, Guid id, ColumnSet columnSet) => _orgService.Retrieve(entityName, id, columnSet);
 
 		public EntityCollection RetrieveMultiple(QueryBase query) => _orgService.RetrieveMultiple(query);
 

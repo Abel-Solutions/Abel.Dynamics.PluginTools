@@ -83,6 +83,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OrgService\OrgService.csproj">
+      <Project>{FDB0EC7E-50AE-4E26-9EB4-FFCC5944B81D}</Project>
+      <Name>OrgService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Reflex\Reflex.csproj">
       <Project>{9bd2ac3e-0226-42d8-8d69-5ad42e7bde5f}</Project>
       <Name>Reflex</Name>
