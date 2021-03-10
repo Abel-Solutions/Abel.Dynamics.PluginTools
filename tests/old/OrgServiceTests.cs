@@ -1,9 +1,7 @@
 using System;
-using NotDynamocs;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using Moq;
-using OrgServiz;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,15 +22,13 @@ namespace Tests
 				Id = Guid.NewGuid()
 			};
 
-			var dynamocs = new Dynamocs();
+			var dynamocs = new Dynamocs.TestTools.Dynamocs();
 			dynamocs.Initialize(account);
 
-			var orgService = new OrgService(dynamocs.OrganizationService.Object);
-
-			var retrievedAccount = orgService.Retrieve("account", account.Id);
+			var retrievedAccount = dynamocs.OrgService.Retrieve("account", account.Id);
 			Assert.Equal(account.Id, retrievedAccount.Id);
 
-			dynamocs.OrganizationService.Verify(o => o.Retrieve("account", account.Id, It.IsAny<ColumnSet>()), Times.Once);
+			dynamocs.MockOrganizationService.Verify(o => o.Retrieve("account", account.Id, It.IsAny<ColumnSet>()), Times.Once);
 		}
 	}
 }

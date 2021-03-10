@@ -1,4 +1,4 @@
-﻿namespace Reflex
+﻿namespace Dynamocs.DevTools
 {
 	public static class ReflectionExtensions
 	{

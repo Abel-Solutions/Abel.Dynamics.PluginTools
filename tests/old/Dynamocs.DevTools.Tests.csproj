@@ -9,8 +9,8 @@
     <ProjectGuid>{713E254E-85AE-45A3-BBEC-8D37109D8B78}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tests</RootNamespace>
-    <AssemblyName>Tests</AssemblyName>
+    <RootNamespace>Dynamocs.DevTools.Tests</RootNamespace>
+    <AssemblyName>Dynamocs.DevTools.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -92,6 +92,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Plugin.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OrgServiceTests.cs" />
@@ -101,25 +102,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NotDynamocs\NotDynamocs.csproj">
-      <Project>{dc4131d7-4813-44ac-83b6-4bce1cb83844}</Project>
-      <Name>NotDynamocs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OrgService\OrgService.csproj">
-      <Project>{FDB0EC7E-50AE-4E26-9EB4-FFCC5944B81D}</Project>
-      <Name>OrgService</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PluginBase\PluginBase.csproj">
-      <Project>{df92ecd7-c3d6-4f53-9fac-eee637e8a03a}</Project>
-      <Name>PluginBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\Plugins.csproj">
-      <Project>{aff1e756-f113-437c-9aa6-81516a23b7b5}</Project>
-      <Name>Plugins</Name>
-    </ProjectReference>
+    <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+    <ProjectReference Include="..\..\src\Dynamocs.DevTools\Dynamocs.DevTools.csproj">
+      <Project>{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988}</Project>
+      <Name>Dynamocs.DevTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Dynamocs.TestTools\Dynamocs.TestTools.csproj">
+      <Project>{61AE2EAD-BE0E-4BF2-92A2-29557E2E384C}</Project>
+      <Name>Dynamocs.TestTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

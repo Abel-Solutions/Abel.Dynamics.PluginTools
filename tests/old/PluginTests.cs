@@ -1,5 +1,4 @@
 using System;
-using Plugins;
 using NotDynamocs;
 using Microsoft.Xrm.Sdk;
 using Moq;
@@ -35,7 +34,7 @@ namespace Tests
 			Assert.Equal("bar2", maybeCreatedLol["name"]);
 			Assert.NotEqual(Guid.Empty, maybeCreatedLol.Id);
 
-			dynamocs.OrganizationService.Verify(s => s.Update(It.IsAny<Entity>()), Times.Once);
+			dynamocs.MockOrganizationService.Verify(s => s.Update(It.IsAny<Entity>()), Times.Once);
 		}
 	}
 }
