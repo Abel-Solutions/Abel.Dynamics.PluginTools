@@ -7,6 +7,7 @@ namespace Dynamocs.DevTools
 	{
 		public abstract void Execute(PluginContext context);
 
-		public void Execute(IServiceProvider serviceProvider) => Execute(new PluginContext(serviceProvider));
+		public void Execute(IServiceProvider serviceProvider) =>
+			Execute(new PluginContext(serviceProvider));
 	}
 }

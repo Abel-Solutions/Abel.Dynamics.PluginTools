@@ -43,21 +43,22 @@ namespace Dynamocs.TestTools
 
 		public void Initialize(params Entity[] records) => records.ToList().ForEach(AddRecord);
 
-		public TEntity GetRecord<TEntity>()
+		public TEntity GetRecord<TEntity>() 
 			where TEntity : Entity =>
 			GetRecord(Activator.CreateInstance<TEntity>().LogicalName)?.ToEntity<TEntity>();
 
-		public TEntity GetRecord<TEntity>(Guid id)
+		public TEntity GetRecord<TEntity>(Guid id) 
 			where TEntity : Entity =>
 			GetRecord(id)?.ToEntity<TEntity>();
 
-		public Entity GetRecord(Guid id) =>
+		public Entity GetRecord(Guid id) => 
 			_records.ContainsKey(id) ? _records[id] : null;
 
 		public Entity GetRecord(string entityName) =>
-			_records
-				.Select(r => r.Value)
-				.FirstOrDefault(r => r.LogicalName == entityName);
+			GetRecords(entityName).FirstOrDefault();
+
+		public IEnumerable<Entity> GetRecords(string entityName) =>
+			_records.Select(r => r.Value).Where(r => r.LogicalName == entityName);
 
 		private void AddRecord(Entity entity)
 		{
@@ -78,15 +79,7 @@ namespace Dynamocs.TestTools
 				.Returns(args => _records[args.Arg<Guid>()]);
 
 			OrganizationService.RetrieveMultiple(Arg.Any<QueryBase>())
-				.Returns(args =>
-				{
-					var entityName = args.Arg<QueryBase>().GetValue<string>("EntityName");
-					var records = _records
-						.Where(r => r.Value.LogicalName == entityName) // todo this is crap
-						.Select(r => r.Value)
-						.ToList();
-					return new EntityCollection(records);
-				});
+				.Returns(args => new EntityCollection(GetRecords(args.Arg<QueryBase>().GetValue<string>("EntityName")).ToArray())); // todo this is crap
 		}
 
 		private void SetupServiceProvider()

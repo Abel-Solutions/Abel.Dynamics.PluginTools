@@ -55,6 +55,7 @@ namespace Dynamocs.DevTools
 			orgService.Retrieve(Activator.CreateInstance<TEntity>().LogicalName, id, columnSet)
 				.ToEntity<TEntity>();
 
-		public static Entity Retrieve(this IOrganizationService orgService, string entityName, Guid id) => orgService.Retrieve(entityName, id, null);
+		public static Entity Retrieve(this IOrganizationService orgService, string entityName, Guid id) =>
+			orgService.Retrieve(entityName, id, null);
 	}
 }
