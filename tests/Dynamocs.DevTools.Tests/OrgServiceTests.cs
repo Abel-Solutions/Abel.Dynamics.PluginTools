@@ -15,7 +15,7 @@ namespace Dynamocs.DevTools.Tests
 		}
 
 		[Fact]
-		public void Retrieve_VerifyRetrieveWasCalled()
+		public void Retrieve_Verify()
 		{
 			var account = new Entity("account")
 			{
@@ -29,6 +29,23 @@ namespace Dynamocs.DevTools.Tests
 			Assert.Equal(account.Id, retrievedAccount.Id);
 
 			dynamocs.OrganizationService.Received().Retrieve("account", account.Id, Arg.Any<ColumnSet>());
+		}
+
+		[Fact]
+		public void RetrieveByAttribute_Verify()
+		{
+			var account = new Entity("account")
+			{
+				["name"] = "lol"
+			};
+
+			var dynamocs = new TestTools.Dynamocs();
+			dynamocs.Initialize(account);
+
+			var retrievedAccount = dynamocs.OrganizationService.RetrieveByAttribute("account", "name", "lol");
+			Assert.Equal(account.Id, retrievedAccount.Id);
+
+			dynamocs.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryBase>(q => q.EntityName() == "account"));
 		}
 	}
 }
