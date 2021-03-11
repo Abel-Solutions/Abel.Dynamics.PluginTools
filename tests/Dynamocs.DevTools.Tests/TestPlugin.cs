@@ -1,29 +1,27 @@
-﻿using Microsoft.Xrm.Sdk;
-
-namespace Dynamocs.DevTools.Tests
+﻿namespace Dynamocs.DevTools.Tests
 {
-    public class TestPlugin : PluginBase
-    {
-        public override void Execute(PluginContext context)
-        {
-            context.Trace("looool");
+	public class TestPlugin : PluginBase
+	{
+		public override void Execute(PluginContext context)
+		{
+			context.Trace("looool");
 
-            var target = context.Target;
-            var service = context.OrgService;
+			var target = context.GetTarget<Account>();
+			var service = context.OrgService;
 
-            target["name"] = "foo";
+			target.Name = "foo";
 
-            var lol = new Entity("lol")
-            {
-                ["name"] = "bar"
-            };
-            var id = service.Create(lol);
+			var lol = new Account
+			{
+				Name = "bar"
+			};
+			var id = service.Create(lol);
 
-            lol = service.RetrieveByAttribute("lol", "name", "bar");
+			lol = service.RetrieveByAttribute<Account>("name", "bar");
 
-            lol.Id = id;
-            lol["name"] = "bar2";
-            service.Update(lol);
-        }
-    }
+			lol.Id = id;
+			lol.Name = "bar2";
+			service.Update(lol);
+		}
+	}
 }

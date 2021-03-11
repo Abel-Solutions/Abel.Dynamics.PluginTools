@@ -16,9 +16,10 @@ namespace Dynamocs.DevTools.Tests
 		[Fact]
 		public void RunPlugin_VerifyUpdateWasCalled()
 		{
-			var account = new Entity("account")
+			var account = new Account
 			{
-				Id = Guid.NewGuid()
+				Id = Guid.NewGuid(),
+				Name = "lol"
 			};
 
 			var dynamocs = new TestTools.Dynamocs();
@@ -26,11 +27,11 @@ namespace Dynamocs.DevTools.Tests
 
 			dynamocs.ExecutePlugin<TestPlugin>(account, "update");
 
-			var maybeUpdatedAccount = dynamocs.GetRecord(account.Id);
-			Assert.Equal("foo", maybeUpdatedAccount["name"]);
+			var maybeUpdatedAccount = dynamocs.GetRecord<Account>(account.Id);
+			Assert.Equal("foo", maybeUpdatedAccount.Name);
 
-			var maybeCreatedLol = dynamocs.GetRecord("lol");
-			Assert.Equal("bar2", maybeCreatedLol["name"]);
+			var maybeCreatedLol = dynamocs.OrganizationService.RetrieveByAttribute<Account>(nameof(Account.Name).ToLower(), "bar2");
+			Assert.Equal("bar2", maybeCreatedLol.Name);
 			Assert.NotEqual(Guid.Empty, maybeCreatedLol.Id);
 
 			dynamocs.OrganizationService.Received().Update(Arg.Any<Entity>());
