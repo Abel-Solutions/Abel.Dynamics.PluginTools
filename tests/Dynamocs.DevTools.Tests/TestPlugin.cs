@@ -19,7 +19,7 @@ namespace Dynamocs.DevTools.Tests
             };
             var id = service.Create(lol);
 
-            lol = service.RetrieveByAttribute("lol", "name", "bar2");
+            lol = service.RetrieveByAttribute("lol", "name", "bar");
 
             lol.Id = id;
             lol["name"] = "bar2";

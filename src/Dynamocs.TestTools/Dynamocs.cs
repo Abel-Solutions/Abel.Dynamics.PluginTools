@@ -78,9 +78,13 @@ namespace Dynamocs.TestTools
 			OrganizationService.Retrieve(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<ColumnSet>())
 				.Returns(args => _records[args.Arg<Guid>()]);
 
-			OrganizationService.RetrieveMultiple(Arg.Any<QueryBase>())
-				.Returns(args => GetRecords(args.Arg<QueryBase>().EntityName()).ToEntityCollection()); // todo this is crap
+			OrganizationService.RetrieveMultiple(Arg.Any<QueryByAttribute>())
+				.Returns(args => _records.Select(r => r.Value).Where(r => IsMatch(r, args.Arg<QueryByAttribute>())).ToEntityCollection());
 		}
+
+		private static bool IsMatch(Entity entity, QueryByAttribute query) =>
+			entity.LogicalName == query.EntityName &&
+			!query.Attributes.Where((t, i) => !entity.Contains(t) || entity[t] != query.Values[i]).Any();
 
 		private void SetupServiceProvider()
 		{
