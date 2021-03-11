@@ -64,5 +64,23 @@ namespace Dynamocs.DevTools.Tests
 
 			dynamocs.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryByAttribute>(q => q.EntityName == "account"));
 		}
+
+		[Fact]
+		public void RetrieveByAttributeGeneric_ShouldMatch()
+		{
+			var account = new Account
+			{
+				Name = "Kåre"
+			};
+
+			var dynamocs = new TestTools.Dynamocs();
+			dynamocs.Initialize(account);
+
+			var retrievedAccount = dynamocs.OrganizationService.RetrieveByAttribute<Account>("name", "Kåre");
+			Assert.Equal(account.Name, retrievedAccount.Name);
+
+			dynamocs.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryByAttribute>(q =>
+				q.EntityName == "account" && q.Attributes.Contains("name") && q.Values.Contains("Kåre")));
+		}
 	}
 }
