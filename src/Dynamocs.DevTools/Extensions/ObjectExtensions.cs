@@ -1,6 +1,6 @@
 ﻿namespace Dynamocs.DevTools
 {
-	public static class ReflectionExtensions
+	public static class ObjectExtensions
 	{
 		public static T GetValue<T>(this object obj, string name)
 		{
