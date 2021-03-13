@@ -20,7 +20,9 @@ namespace Dynamocs.TestTools
 
 		public IOrganizationService OrganizationService { get; } = Substitute.For<IOrganizationService>();
 
-		private readonly Dictionary<Guid, Entity> _records = new Dictionary<Guid, Entity>();
+		private readonly IDictionary<Guid, Entity> _records = new Dictionary<Guid, Entity>();
+
+		private readonly IList<(PluginStepAttribute step, Type pluginType)> _steps = new List<(PluginStepAttribute, Type)>(); // todo not attributes
 
 		public Dynamocs()
 		{
@@ -31,14 +33,19 @@ namespace Dynamocs.TestTools
 			SetupServiceProvider();
 
 			SetupTracingService();
+
+			ExecutionContext.Depth.Returns(-1); // todo ugly
 		}
 
 		public void ExecutePlugin<TPlugin>(Entity target, string messageName = "create", Guid? userId = null)
-			where TPlugin : IPlugin
+			where TPlugin : IPlugin =>
+			ExecutePlugin(typeof(TPlugin), target, messageName, userId);
+
+		public void ExecutePlugin(Type pluginType, Entity target, string messageName = "create", Guid? userId = null)
 		{
 			SetupExecutionContext(target, messageName, userId);
 
-			Activator.CreateInstance<TPlugin>().Execute(ServiceProvider);
+			((IPlugin)Activator.CreateInstance(pluginType)).Execute(ServiceProvider); // todo nicer cast
 		}
 
 		public void Initialize(params Entity[] records) => records.ToList().ForEach(AddRecord);
@@ -60,6 +67,13 @@ namespace Dynamocs.TestTools
 		public IEnumerable<Entity> GetRecords(string entityName) =>
 			_records.Select(r => r.Value).Where(r => r.LogicalName == entityName);
 
+		public void RegisterPlugin<TPlugin>() =>
+			typeof(TPlugin).GetAttributes<PluginStepAttribute>().ToList()
+				.ForEach(s => RegisterPlugin<TPlugin>(s.MessageName, s.EntityName));
+
+		public void RegisterPlugin<TPlugin>(string messageName, string entityName) =>
+			_steps.Add((new PluginStepAttribute(messageName, entityName), typeof(TPlugin)));
+
 		private void AddRecord(Entity entity)
 		{
 			entity.Id = entity.Id == Guid.Empty ? Guid.NewGuid() : entity.Id;
@@ -68,10 +82,17 @@ namespace Dynamocs.TestTools
 
 		private void SetupOrganizationService()
 		{
-			OrganizationService.Create(Arg.Do<Entity>(AddRecord))
-				.Returns(args => args.Arg<Entity>().Id);
+			OrganizationService.Create(Arg.Do<Entity>(entity =>
+			{
+				AddRecord(entity);
+				TriggerPlugins("create", entity);
+			})).Returns(args => args.Arg<Entity>().Id);
 
-			OrganizationService.Update(Arg.Do<Entity>(e => _records[e.Id] = e));
+			OrganizationService.Update(Arg.Do<Entity>(entity =>
+			{
+				_records[entity.Id] = entity;
+				TriggerPlugins("update", entity);
+			}));
 
 			OrganizationService.Delete(Arg.Any<string>(), Arg.Do<Guid>(id => _records.Remove(id)));
 
@@ -81,6 +102,13 @@ namespace Dynamocs.TestTools
 			OrganizationService.RetrieveMultiple(Arg.Any<QueryByAttribute>())
 				.Returns(args => _records.Select(r => r.Value).Where(r => IsMatch(r, args.Arg<QueryByAttribute>())).ToEntityCollection());
 		}
+
+		private void TriggerPlugins(string messageName, Entity entity) =>
+			_steps
+				.Where(step => step.step.IsMatch(messageName, entity.LogicalName))
+				.Select(s => s.pluginType)
+				.ToList()
+				.ForEach(pluginType => ExecutePlugin(pluginType, entity, messageName));
 
 		private static bool IsMatch(Entity entity, QueryByAttribute query) =>
 			entity.LogicalName == query.EntityName &&
@@ -105,6 +133,8 @@ namespace Dynamocs.TestTools
 			ExecutionContext.MessageName.Returns(messageName);
 
 			ExecutionContext.UserId.Returns(userId ?? Guid.NewGuid());
+
+			ExecutionContext.Depth.Returns(ExecutionContext.Depth + 1); // todo this is global
 		}
 
 		private void SetupTracingService() =>

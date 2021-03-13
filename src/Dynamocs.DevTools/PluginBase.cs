@@ -6,6 +6,8 @@ namespace Dynamocs.DevTools
 {
 	public abstract class PluginBase : IPlugin
 	{
+		public const int MaxDepth = 5; // todo config
+
 		public string PluginName => GetType().Name;
 
 		public abstract void Execute(PluginContext context);
@@ -18,6 +20,8 @@ namespace Dynamocs.DevTools
 
 			try
 			{
+				ValidateDepth(context);
+
 				ValidateTrigger(context);
 
 				Execute(context);
@@ -38,10 +42,18 @@ namespace Dynamocs.DevTools
 			}
 		}
 
+		private static void ValidateDepth(PluginContext context)
+		{
+			if (context.Depth >= MaxDepth)
+			{
+				throw new InvalidPluginExecutionException($"Plugin depth is at or above max: {context.Depth} (max is {MaxDepth})");
+			}
+		}
+
 		private void ValidateTrigger(PluginContext context)
 		{
-			if (GetType().GetAttributes<PluginStepAttribute>()
-				.All(step => step.MessageName != context.MessageName || step.EntityName != context.EntityName))
+			if (!GetType().GetAttributes<PluginStepAttribute>()
+				.Any(step => step.IsMatch(context.MessageName, context.EntityName)))
 			{
 				throw new InvalidPluginExecutionException(
 					$"Error: {PluginName} does not have any {nameof(PluginStepAttribute)} " +

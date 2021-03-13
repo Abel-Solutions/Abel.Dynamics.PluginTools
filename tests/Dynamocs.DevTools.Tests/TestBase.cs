@@ -11,7 +11,7 @@ namespace Dynamocs.DevTools.Tests
 		{
 			var textWriter = Substitute.For<TextWriter>();
 			textWriter.WriteLine(Arg.Do<string>(output.WriteLine));
-			Console.SetOut(textWriter);
+			Console.SetOut(textWriter); // todo tests compete for this
 		}
 	}
 }

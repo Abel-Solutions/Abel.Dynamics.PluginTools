@@ -13,6 +13,8 @@ namespace Dynamocs.DevTools
 
 		public string MessageName => _executionContext.MessageName;
 
+		public int Depth => _executionContext.Depth;
+
 		private readonly IPluginExecutionContext _executionContext;
 
 		private readonly ITracingService _tracingService;

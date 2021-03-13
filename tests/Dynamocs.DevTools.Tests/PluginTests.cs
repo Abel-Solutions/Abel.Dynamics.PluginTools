@@ -1,4 +1,6 @@
 using System;
+using Dynamocs.DevTools.Tests.Models;
+using Dynamocs.DevTools.Tests.Plugins;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;
 using Xunit;
@@ -14,7 +16,7 @@ namespace Dynamocs.DevTools.Tests
 		}
 
 		[Fact]
-		public void RunPlugin_VerifyUpdateWasCalled()
+		public void ExecutePlugin_VerifyUpdateWasCalled()
 		{
 			var account = new Account
 			{
@@ -35,6 +37,28 @@ namespace Dynamocs.DevTools.Tests
 			Assert.NotEqual(Guid.Empty, maybeCreatedLol.Id);
 
 			dynamocs.OrganizationService.Received().Update(Arg.Any<Entity>());
+		}
+
+		[Fact]
+		public void TriggerPlugin_TriggersItself_Throws()
+		{
+			var account = new Account
+			{
+				Id = Guid.NewGuid(),
+				Name = "lol"
+			};
+
+			var dynamocs = new TestTools.Dynamocs();
+			dynamocs.Initialize(account);
+
+			dynamocs.RegisterPlugin<TestPlugin>();
+
+			account.Name = "foo";
+
+			var ex = Assert.Throws<InvalidPluginExecutionException>(() => dynamocs.OrganizationService.Update(account));
+			Assert.Equal("Plugin depth is at or above max: 5 (max is 5)", ex.Message);
+
+			dynamocs.OrganizationService.Received(PluginBase.MaxDepth).Update(Arg.Is<Account>(a => a.Name == "foo"));
 		}
 	}
 }
