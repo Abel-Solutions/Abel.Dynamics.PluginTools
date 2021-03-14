@@ -1,4 +1,3 @@
-using Dynamocs.DevTools.Tests.Models;
 using Dynamocs.DevTools.Tests.Plugins;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;

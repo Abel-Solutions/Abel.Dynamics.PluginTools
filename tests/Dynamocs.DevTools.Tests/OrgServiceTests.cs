@@ -1,5 +1,4 @@
 using System;
-using Dynamocs.DevTools.Tests.Models;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;

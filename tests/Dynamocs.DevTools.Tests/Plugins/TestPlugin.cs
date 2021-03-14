@@ -1,6 +1,4 @@
-﻿using Dynamocs.DevTools.Tests.Models;
-
-namespace Dynamocs.DevTools.Tests.Plugins
+﻿namespace Dynamocs.DevTools.Tests.Plugins
 {
 	[PluginStep("update", "account")]
 	public class TestPlugin : PluginBase
