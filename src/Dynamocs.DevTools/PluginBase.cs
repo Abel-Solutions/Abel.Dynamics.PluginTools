@@ -46,7 +46,7 @@ namespace Dynamocs.DevTools
 		{
 			if (context.Depth >= MaxDepth)
 			{
-				throw new InvalidPluginExecutionException($"Plugin depth is at or above max: {context.Depth} (max is {MaxDepth})");
+				throw new InvalidPluginExecutionException($"Plugin depth is at or above max: {context.Depth}");
 			}
 		}
 
