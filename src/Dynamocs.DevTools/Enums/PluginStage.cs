@@ -1,6 +1,6 @@
 ﻿namespace Dynamocs.DevTools.Enums
 {
-	public enum Stage
+	public enum PluginStage
 	{
 		PreValidation = 10,
 

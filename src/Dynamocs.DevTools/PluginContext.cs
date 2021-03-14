@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk;
 using System;
 using Dynamocs.DevTools.Enums;
+using Dynamocs.DevTools.Extensions;
 
 namespace Dynamocs.DevTools
 {
@@ -18,7 +19,7 @@ namespace Dynamocs.DevTools
 
 		public int Depth => _executionContext.Depth;
 
-		public Stage Stage => (Stage)_executionContext.Stage;
+		public PluginStage Stage => (PluginStage)_executionContext.Stage;
 
 		private readonly IPluginExecutionContext _executionContext;
 

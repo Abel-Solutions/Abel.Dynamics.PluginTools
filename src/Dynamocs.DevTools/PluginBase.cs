@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xrm.Sdk;
 using System;
 using System.Linq;
+using Dynamocs.DevTools.Attributes;
+using Dynamocs.DevTools.Extensions;
 
 namespace Dynamocs.DevTools
 {

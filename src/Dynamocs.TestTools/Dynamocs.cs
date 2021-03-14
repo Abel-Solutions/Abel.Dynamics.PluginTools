@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dynamocs.DevTools;
+using Dynamocs.DevTools.Attributes;
 using Dynamocs.DevTools.Enums;
+using Dynamocs.DevTools.Extensions;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;
@@ -38,11 +40,11 @@ namespace Dynamocs.TestTools
 			ExecutionContext.Depth.Returns(-1); // todo ugly
 		}
 
-		public void ExecutePlugin<TPlugin>(Entity target, string messageName = "create", Stage? stage = Stage.PostOperation, Guid? userId = null)
+		public void ExecutePlugin<TPlugin>(Entity target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
 			where TPlugin : IPlugin =>
 			ExecutePlugin(typeof(TPlugin), target, messageName, stage, userId);
 
-		public void ExecutePlugin(Type pluginType, Entity target, string messageName = "create", Stage? stage = Stage.PostOperation, Guid? userId = null)
+		public void ExecutePlugin(Type pluginType, Entity target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
 		{
 			SetupExecutionContext(target, messageName, stage, userId);
 
@@ -127,7 +129,7 @@ namespace Dynamocs.TestTools
 				.Returns(ServiceFactory);
 		}
 
-		private void SetupExecutionContext(Entity target, string messageName, Stage? stage, Guid? userId)
+		private void SetupExecutionContext(Entity target, string messageName, PluginStage? stage, Guid? userId)
 		{
 			ExecutionContext.InputParameters.Returns(new ParameterCollection { { "Target", target } });
 
