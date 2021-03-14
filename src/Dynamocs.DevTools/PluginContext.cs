@@ -5,11 +5,13 @@ using Dynamocs.DevTools.Extensions;
 
 namespace Dynamocs.DevTools
 {
-	public class PluginContext
+	public class PluginContext<TEntity>
+		where TEntity : Entity
 	{
-		public IOrganizationService OrgService { get; }
+		public TEntity Target => GetInputParameter<Entity>("Target")
+			.ToEntity<TEntity>();
 
-		public Entity Target { get; }
+		public IOrganizationService OrgService { get; }
 
 		public string MessageName => _executionContext.MessageName;
 
@@ -31,18 +33,14 @@ namespace Dynamocs.DevTools
 
 			_executionContext = serviceProvider.GetService<IPluginExecutionContext>();
 
-			Target = _executionContext.InputParameters.ContainsKey("Target")
-				? (Entity)_executionContext.InputParameters["Target"]
-				: null;
-
-			var serviceFactory = serviceProvider.GetService<IOrganizationServiceFactory>();
-
-			OrgService = serviceFactory.CreateOrganizationService(UserId);
+			OrgService = serviceProvider.GetService<IOrganizationServiceFactory>()
+				.CreateOrganizationService(UserId);
 		}
 
-		public TEntity GetTarget<TEntity>()
-			where TEntity : Entity =>
-			Target.ToEntity<TEntity>();
+		public T GetInputParameter<T>(string name) =>
+			_executionContext.InputParameters.ContainsKey(name)
+				? (T)_executionContext.InputParameters[name]
+				: default;
 
 		public void Trace(string s) => _tracingService.Trace(s);
 	}

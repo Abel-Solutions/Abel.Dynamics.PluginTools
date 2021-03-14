@@ -1,18 +1,17 @@
 ﻿using Dynamocs.DevTools.Attributes;
 using Dynamocs.DevTools.Extensions;
 using Dynamocs.DevTools.Tests.Models;
-using Microsoft.Xrm.Sdk;
 
 namespace Dynamocs.DevTools.Tests.Plugins
 {
 	[PluginStep("update", "account")]
-	public class TestPlugin : Plugin
+	public class GenericPlugin : Plugin<Account>
 	{
-		public override void Execute(PluginContext<Entity> context)
+		public override void Execute(PluginContext<Account> context)
 		{
 			context.Trace("looool");
 
-			var target = context.Target.ToEntity<Account>();
+			var target = context.Target;
 			var service = context.OrgService;
 
 			target.Name = "foo";
