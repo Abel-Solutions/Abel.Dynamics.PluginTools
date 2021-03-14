@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dynamocs.DevTools
+namespace Dynamocs.DevTools.Extensions
 {
 	public static class ServiceProviderExtensions
 	{

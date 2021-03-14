@@ -2,6 +2,8 @@ using Dynamocs.DevTools.Tests.Plugins;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;
 using System;
+using Dynamocs.DevTools.Extensions;
+using Dynamocs.DevTools.Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -56,7 +58,7 @@ namespace Dynamocs.DevTools.Tests
 			account.Name = "foo";
 
 			var ex = Assert.Throws<InvalidPluginExecutionException>(() => dynamocs.OrganizationService.Update(account));
-			Assert.Equal("Plugin depth is at or above max: 5 (max is 5)", ex.Message);
+			Assert.Equal("Plugin depth is at or above max: 5", ex.Message);
 
 			dynamocs.OrganizationService.Received(PluginBase.MaxDepth).Update(Arg.Is<Account>(a => a.Name == "foo"));
 

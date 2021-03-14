@@ -1,10 +1,10 @@
-﻿using Microsoft.Xrm.Sdk;
-using Microsoft.Xrm.Sdk.Query;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 
-namespace Dynamocs.DevTools
+namespace Dynamocs.DevTools.Extensions
 {
 	public static class OrganizationServiceExtensions
 	{

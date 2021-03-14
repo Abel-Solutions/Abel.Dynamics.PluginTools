@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk;
 using System;
+using Dynamocs.DevTools.Enums;
+using Dynamocs.DevTools.Extensions;
 
 namespace Dynamocs.DevTools
 {
@@ -9,11 +11,15 @@ namespace Dynamocs.DevTools
 
 		public Entity Target { get; }
 
-		public string EntityName => Target.LogicalName;
-
 		public string MessageName => _executionContext.MessageName;
 
+		public string EntityName => Target.LogicalName;
+
+		public Guid UserId => _executionContext.UserId;
+
 		public int Depth => _executionContext.Depth;
+
+		public PluginStage Stage => (PluginStage)_executionContext.Stage;
 
 		private readonly IPluginExecutionContext _executionContext;
 
@@ -31,7 +37,7 @@ namespace Dynamocs.DevTools
 
 			var serviceFactory = serviceProvider.GetService<IOrganizationServiceFactory>();
 
-			OrgService = serviceFactory.CreateOrganizationService(_executionContext.UserId);
+			OrgService = serviceFactory.CreateOrganizationService(UserId);
 		}
 
 		public TEntity GetTarget<TEntity>()

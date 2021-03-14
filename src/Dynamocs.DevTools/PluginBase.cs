@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xrm.Sdk;
 using System;
 using System.Linq;
+using Dynamocs.DevTools.Attributes;
+using Dynamocs.DevTools.Extensions;
 
 namespace Dynamocs.DevTools
 {
@@ -17,6 +19,12 @@ namespace Dynamocs.DevTools
 			var context = new PluginContext(serviceProvider);
 
 			context.Trace($"Start of {PluginName}");
+
+			context.Trace($"Message name: {context.MessageName}");
+			context.Trace($"Entity name: {context.EntityName}");
+			context.Trace($"User ID: {context.UserId}");
+			context.Trace($"Stage: {context.Stage}");
+			context.Trace($"Depth: {context.Depth}");
 
 			try
 			{

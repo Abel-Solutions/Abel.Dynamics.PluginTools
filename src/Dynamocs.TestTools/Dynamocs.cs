@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dynamocs.DevTools;
+using Dynamocs.DevTools.Attributes;
+using Dynamocs.DevTools.Enums;
+using Dynamocs.DevTools.Extensions;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;
@@ -24,6 +27,8 @@ namespace Dynamocs.TestTools
 
 		private readonly IList<(string messageName, string entityName, Type pluginType)> _steps = new List<(string, string, Type)>();
 
+		private readonly Guid _userId = Guid.NewGuid();
+
 		public Dynamocs()
 		{
 			SetupOrganizationService();
@@ -35,13 +40,13 @@ namespace Dynamocs.TestTools
 			ExecutionContext.Depth.Returns(-1); // todo ugly
 		}
 
-		public void ExecutePlugin<TPlugin>(Entity target, string messageName = "create", Guid? userId = null)
+		public void ExecutePlugin<TPlugin>(Entity target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
 			where TPlugin : IPlugin =>
-			ExecutePlugin(typeof(TPlugin), target, messageName, userId);
+			ExecutePlugin(typeof(TPlugin), target, messageName, stage, userId);
 
-		public void ExecutePlugin(Type pluginType, Entity target, string messageName = "create", Guid? userId = null)
+		public void ExecutePlugin(Type pluginType, Entity target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
 		{
-			SetupExecutionContext(target, messageName, userId);
+			SetupExecutionContext(target, messageName, stage, userId);
 
 			((IPlugin)Activator.CreateInstance(pluginType)).Execute(ServiceProvider);
 		}
@@ -124,13 +129,15 @@ namespace Dynamocs.TestTools
 				.Returns(ServiceFactory);
 		}
 
-		private void SetupExecutionContext(Entity target, string messageName, Guid? userId)
+		private void SetupExecutionContext(Entity target, string messageName, PluginStage? stage, Guid? userId)
 		{
 			ExecutionContext.InputParameters.Returns(new ParameterCollection { { "Target", target } });
 
 			ExecutionContext.MessageName.Returns(messageName);
 
-			ExecutionContext.UserId.Returns(userId ?? Guid.NewGuid());
+			ExecutionContext.Stage.Returns((int)stage);
+
+			ExecutionContext.UserId.Returns(userId ?? _userId);
 
 			ExecutionContext.Depth.Returns(ExecutionContext.Depth + 1);
 		}
