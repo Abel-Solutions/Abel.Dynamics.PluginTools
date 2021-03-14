@@ -32,8 +32,6 @@ namespace Dynamocs.TestTools
 
 			SetupServiceProvider();
 
-			SetupTracingService();
-
 			ExecutionContext.Depth.Returns(-1); // todo ugly
 		}
 
@@ -136,9 +134,6 @@ namespace Dynamocs.TestTools
 
 			ExecutionContext.Depth.Returns(ExecutionContext.Depth + 1); // todo this is global
 		}
-
-		private void SetupTracingService() =>
-			TracingService.Trace(Arg.Do<string>(Console.WriteLine), Arg.Any<object[]>());
 
 		private void SetupServiceFactory() =>
 			ServiceFactory.CreateOrganizationService(Arg.Any<Guid>())

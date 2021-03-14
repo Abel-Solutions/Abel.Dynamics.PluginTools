@@ -4,17 +4,11 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Dynamocs.DevTools.Tests
 {
-	public class OrgServiceTests : TestBase
+	public class OrgServiceTests
 	{
-		public OrgServiceTests(ITestOutputHelper output)
-			: base(output)
-		{
-		}
-
 		[Fact]
 		public void Retrieve_Verify()
 		{
