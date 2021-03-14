@@ -61,7 +61,7 @@ namespace Dynamocs.DevTools.Tests
 			var ex = Assert.Throws<InvalidPluginExecutionException>(() => dynamocs.OrganizationService.Update(account));
 			Assert.Equal("Plugin depth is at or above max: 5", ex.Message);
 
-			dynamocs.OrganizationService.Received(PluginBase.MaxDepth).Update(Arg.Is<Account>(a => a.Name == "foo"));
+			dynamocs.OrganizationService.Received(5).Update(Arg.Is<Account>(a => a.Name == "foo"));
 
 			dynamocs.TracingService.GetTraces().ForEach(_output.WriteLine);
 		}

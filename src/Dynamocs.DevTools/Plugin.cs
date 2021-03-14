@@ -6,17 +6,18 @@ using Dynamocs.DevTools.Extensions;
 
 namespace Dynamocs.DevTools
 {
-	public abstract class PluginBase : IPlugin
+	public abstract class Plugin<TEntity> : IPlugin
+		where TEntity : Entity
 	{
 		public const int MaxDepth = 5; // todo config
 
 		public string PluginName => GetType().Name;
 
-		public abstract void Execute(PluginContext context);
+		public abstract void Execute(PluginContext<TEntity> context);
 
 		public void Execute(IServiceProvider serviceProvider)
 		{
-			var context = new PluginContext(serviceProvider);
+			var context = new PluginContext<TEntity>(serviceProvider);
 
 			context.Trace($"Start of {PluginName}");
 
@@ -50,7 +51,7 @@ namespace Dynamocs.DevTools
 			}
 		}
 
-		private static void ValidateDepth(PluginContext context)
+		private static void ValidateDepth(PluginContext<TEntity> context)
 		{
 			if (context.Depth >= MaxDepth)
 			{
@@ -58,7 +59,7 @@ namespace Dynamocs.DevTools
 			}
 		}
 
-		private void ValidateTrigger(PluginContext context)
+		private void ValidateTrigger(PluginContext<TEntity> context)
 		{
 			if (!GetType().GetAttributes<PluginStepAttribute>()
 				.Any(step => string.Equals(step.MessageName, context.MessageName, StringComparison.InvariantCultureIgnoreCase) &&

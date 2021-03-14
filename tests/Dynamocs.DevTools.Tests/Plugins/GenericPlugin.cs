@@ -5,7 +5,7 @@ using Dynamocs.DevTools.Tests.Models;
 namespace Dynamocs.DevTools.Tests.Plugins
 {
 	[PluginStep("update", "account")]
-	public class TestPlugin : Plugin<Account>
+	public class GenericPlugin : Plugin<Account>
 	{
 		public override void Execute(PluginContext<Account> context)
 		{
