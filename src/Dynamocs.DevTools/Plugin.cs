@@ -6,6 +6,10 @@ using Dynamocs.DevTools.Extensions;
 
 namespace Dynamocs.DevTools
 {
+	public abstract class Plugin : Plugin<Entity>
+	{
+	}
+
 	public abstract class Plugin<TEntity> : IPlugin
 		where TEntity : Entity
 	{

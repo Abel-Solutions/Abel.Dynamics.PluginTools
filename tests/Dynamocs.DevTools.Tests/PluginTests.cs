@@ -28,7 +28,7 @@ namespace Dynamocs.DevTools.Tests
 			var dynamocs = new TestTools.Dynamocs();
 			dynamocs.Initialize(account);
 
-			dynamocs.ExecutePlugin<TestPlugin>(account, "update");
+			dynamocs.ExecutePlugin<GenericPlugin>(account, "update");
 
 			var maybeUpdatedAccount = dynamocs.GetRecord<Account>(account.Id);
 			Assert.Equal("foo", maybeUpdatedAccount.Name);
