@@ -9,21 +9,29 @@ namespace Dynamocs.DevTools
 
 		public Entity Target { get; }
 
+		public string EntityName => Target.LogicalName;
+
+		public string MessageName => _executionContext.MessageName;
+
+		public int Depth => _executionContext.Depth;
+
+		private readonly IPluginExecutionContext _executionContext;
+
 		private readonly ITracingService _tracingService;
 
 		public PluginContext(IServiceProvider serviceProvider)
 		{
 			_tracingService = serviceProvider.GetService<ITracingService>();
 
-			var context = serviceProvider.GetService<IPluginExecutionContext>();
+			_executionContext = serviceProvider.GetService<IPluginExecutionContext>();
 
-			Target = context.InputParameters.ContainsKey("Target")
-				? (Entity)context.InputParameters["Target"]
+			Target = _executionContext.InputParameters.ContainsKey("Target")
+				? (Entity)_executionContext.InputParameters["Target"]
 				: null;
 
 			var serviceFactory = serviceProvider.GetService<IOrganizationServiceFactory>();
 
-			OrgService = serviceFactory.CreateOrganizationService(context.UserId);
+			OrgService = serviceFactory.CreateOrganizationService(_executionContext.UserId);
 		}
 
 		public TEntity GetTarget<TEntity>()

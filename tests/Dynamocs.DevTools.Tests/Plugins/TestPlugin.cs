@@ -1,5 +1,6 @@
-﻿namespace Dynamocs.DevTools.Tests
+﻿namespace Dynamocs.DevTools.Tests.Plugins
 {
+	[PluginStep("update", "account")]
 	public class TestPlugin : PluginBase
 	{
 		public override void Execute(PluginContext context)
