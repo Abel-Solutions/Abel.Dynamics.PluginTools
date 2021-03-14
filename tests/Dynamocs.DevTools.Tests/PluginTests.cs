@@ -54,7 +54,7 @@ namespace Dynamocs.DevTools.Tests
 			var dynamocs = new TestTools.Dynamocs();
 			dynamocs.Initialize(account);
 
-			dynamocs.RegisterPlugin<TestPlugin>();
+			dynamocs.RegisterPlugin<StepPlugin>();
 
 			account.Name = "foo";
 
@@ -62,6 +62,25 @@ namespace Dynamocs.DevTools.Tests
 			Assert.Equal("Plugin depth is at or above max: 5", ex.Message);
 
 			dynamocs.OrganizationService.Received(5).Update(Arg.Is<Account>(a => a.Name == "foo"));
+
+			dynamocs.TracingService.GetTraces().ForEach(_output.WriteLine);
+		}
+
+		[Fact]
+		public void ExecutePlugin_NoStepAttributes_DoesNotThrow()
+		{
+			var account = new Account
+			{
+				Id = Guid.NewGuid(),
+				Name = "lol"
+			};
+
+			var dynamocs = new TestTools.Dynamocs();
+			dynamocs.Initialize(account);
+
+			dynamocs.ExecutePlugin<NoStepPlugin>(account, "update");
+			
+			dynamocs.OrganizationService.Received().Update(Arg.Any<Entity>());
 
 			dynamocs.TracingService.GetTraces().ForEach(_output.WriteLine);
 		}

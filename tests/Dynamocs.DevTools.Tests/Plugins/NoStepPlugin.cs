@@ -1,12 +1,10 @@
-﻿using Dynamocs.DevTools.Attributes;
-using Dynamocs.DevTools.Extensions;
+﻿using Dynamocs.DevTools.Extensions;
 using Dynamocs.DevTools.Tests.Models;
 using Microsoft.Xrm.Sdk;
 
 namespace Dynamocs.DevTools.Tests.Plugins
 {
-	[PluginStep("update", "account")]
-	public class TestPlugin : Plugin
+	public class NoStepPlugin : Plugin
 	{
 		public override void Execute(PluginContext<Entity> context)
 		{
