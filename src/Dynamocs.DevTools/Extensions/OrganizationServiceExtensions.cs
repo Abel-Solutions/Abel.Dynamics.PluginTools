@@ -46,16 +46,19 @@ namespace Dynamocs.DevTools.Extensions
 				query.AddAttributeValue(a.Key, a.Value);
 			}
 
-			query.ColumnSet = columnSet;
+			query.ColumnSet = columnSet ?? new ColumnSet(true);
 			return orgService.RetrieveMultiple(query).Entities;
 		}
 
 		public static TEntity Retrieve<TEntity>(this IOrganizationService orgService, Guid id, ColumnSet columnSet = null)
 			where TEntity : Entity =>
-			orgService.Retrieve(Activator.CreateInstance<TEntity>().LogicalName, id, columnSet)
+			orgService.Retrieve(Activator.CreateInstance<TEntity>().LogicalName, id, columnSet ?? new ColumnSet(true))
 				.ToEntity<TEntity>();
 
+		public static Entity Retrieve(this IOrganizationService orgService, EntityReference entityReference, ColumnSet columnSet = null) =>
+			orgService.Retrieve(entityReference.LogicalName, entityReference.Id, columnSet ?? new ColumnSet(true));
+
 		public static Entity Retrieve(this IOrganizationService orgService, string entityName, Guid id) =>
-			orgService.Retrieve(entityName, id, null);
+			orgService.Retrieve(entityName, id, new ColumnSet(true));
 	}
 }
