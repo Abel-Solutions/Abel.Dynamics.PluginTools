@@ -43,15 +43,15 @@ namespace Dynamocs.TestTools
 
 		public void Initialize(params Entity[] records) => records.ToList().ForEach(AddRecord);
 
-		public TEntity GetRecord<TEntity>() 
+		public TEntity GetRecord<TEntity>()
 			where TEntity : Entity =>
 			GetRecord(Activator.CreateInstance<TEntity>().LogicalName)?.ToEntity<TEntity>();
 
-		public TEntity GetRecord<TEntity>(Guid id) 
+		public TEntity GetRecord<TEntity>(Guid id)
 			where TEntity : Entity =>
 			GetRecord(id)?.ToEntity<TEntity>();
 
-		public Entity GetRecord(Guid id) => 
+		public Entity GetRecord(Guid id) =>
 			_records.ContainsKey(id) ? _records[id] : null;
 
 		public Entity GetRecord(string entityName) =>
@@ -78,9 +78,13 @@ namespace Dynamocs.TestTools
 			OrganizationService.Retrieve(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<ColumnSet>())
 				.Returns(args => _records[args.Arg<Guid>()]);
 
-			OrganizationService.RetrieveMultiple(Arg.Any<QueryBase>())
-				.Returns(args => new EntityCollection(GetRecords(args.Arg<QueryBase>().GetValue<string>("EntityName")).ToArray())); // todo this is crap
+			OrganizationService.RetrieveMultiple(Arg.Any<QueryByAttribute>())
+				.Returns(args => _records.Select(r => r.Value).Where(r => IsMatch(r, args.Arg<QueryByAttribute>())).ToEntityCollection());
 		}
+
+		private static bool IsMatch(Entity entity, QueryByAttribute query) =>
+			entity.LogicalName == query.EntityName &&
+			!query.Attributes.Where((t, i) => !entity.Contains(t) || entity[t] != query.Values[i]).Any();
 
 		private void SetupServiceProvider()
 		{
