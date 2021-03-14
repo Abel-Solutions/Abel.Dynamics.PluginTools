@@ -4,6 +4,7 @@ using System.Linq;
 using Dynamocs.DevTools.Attributes;
 using Dynamocs.DevTools.Enums;
 using Dynamocs.DevTools.Extensions;
+using Dynamocs.TestTools.Extensions;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;
@@ -88,7 +89,7 @@ namespace Dynamocs.TestTools
 			{
 				AddRecord(entity);
 				TriggerPlugins("create", entity);
-			})).Returns(args => args.Arg<Entity>().Id);
+			})).Returns((Entity entity) => entity.Id);
 
 			OrganizationService.Update(Arg.Do<Entity>(entity =>
 			{
@@ -99,18 +100,14 @@ namespace Dynamocs.TestTools
 			OrganizationService.Delete(Arg.Any<string>(), Arg.Do<Guid>(id => _records.Remove(id)));
 
 			OrganizationService.Retrieve(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<ColumnSet>())
-				.Returns(args => _records[args.Arg<Guid>()]);
+				.Returns((Guid id) => _records[id]);
 
 			OrganizationService.RetrieveMultiple(Arg.Any<QueryByAttribute>())
-				.Returns(args =>
-				{
-					var query = args.Arg<QueryByAttribute>();
-					return _records
-						.Select(r => r.Value)
-						.Where(entity => entity.LogicalName == query.EntityName &&
-										 !query.Attributes.Where((t, i) => !entity.Contains(t) || entity[t] != query.Values[i]).Any())
-						.ToEntityCollection();
-				});
+				.Returns((QueryByAttribute query) => _records
+					.Select(r => r.Value)
+					.Where(entity => entity.LogicalName == query.EntityName &&
+									 !query.Attributes.Where((t, i) => !entity.Contains(t) || entity[t] != query.Values[i]).Any())
+					.ToEntityCollection());
 		}
 
 		private void TriggerPlugins(string messageName, Entity entity) => _steps
