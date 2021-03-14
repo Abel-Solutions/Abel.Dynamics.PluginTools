@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;
 
-namespace Dynamocs.DevTools.Extensions
+namespace Dynamocs.DevTools.Tests.Extensions
 {
 	public static class TracingServiceExtensions
 	{
