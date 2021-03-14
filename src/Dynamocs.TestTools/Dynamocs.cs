@@ -22,7 +22,7 @@ namespace Dynamocs.TestTools
 
 		private readonly IDictionary<Guid, Entity> _records = new Dictionary<Guid, Entity>();
 
-		private readonly IList<(PluginStepAttribute step, Type pluginType)> _steps = new List<(PluginStepAttribute, Type)>(); // todo not attributes
+		private readonly IList<(string messageName, string entityName, Type pluginType)> _steps = new List<(string, string, Type)>();
 
 		public Dynamocs()
 		{
@@ -43,7 +43,7 @@ namespace Dynamocs.TestTools
 		{
 			SetupExecutionContext(target, messageName, userId);
 
-			((IPlugin)Activator.CreateInstance(pluginType)).Execute(ServiceProvider); // todo nicer cast
+			((IPlugin)Activator.CreateInstance(pluginType)).Execute(ServiceProvider);
 		}
 
 		public void Initialize(params Entity[] records) => records.ToList().ForEach(AddRecord);
@@ -70,7 +70,7 @@ namespace Dynamocs.TestTools
 				.ForEach(s => RegisterPlugin<TPlugin>(s.MessageName, s.EntityName));
 
 		public void RegisterPlugin<TPlugin>(string messageName, string entityName) =>
-			_steps.Add((new PluginStepAttribute(messageName, entityName), typeof(TPlugin)));
+			_steps.Add((messageName, entityName, typeof(TPlugin)));
 
 		private void AddRecord(Entity entity)
 		{
@@ -103,9 +103,9 @@ namespace Dynamocs.TestTools
 
 		private void TriggerPlugins(string messageName, Entity entity) =>
 			_steps
-				.Where(step => step.step.IsMatch(messageName, entity.LogicalName))
+				.Where(step => string.Equals(step.messageName, messageName, StringComparison.InvariantCultureIgnoreCase) &&
+							   string.Equals(step.entityName, entity.LogicalName, StringComparison.InvariantCultureIgnoreCase))
 				.Select(s => s.pluginType)
-				.ToList()
 				.ForEach(pluginType => ExecutePlugin(pluginType, entity, messageName));
 
 		private static bool IsMatch(Entity entity, QueryByAttribute query) =>
@@ -132,7 +132,7 @@ namespace Dynamocs.TestTools
 
 			ExecutionContext.UserId.Returns(userId ?? Guid.NewGuid());
 
-			ExecutionContext.Depth.Returns(ExecutionContext.Depth + 1); // todo this is global
+			ExecutionContext.Depth.Returns(ExecutionContext.Depth + 1);
 		}
 
 		private void SetupServiceFactory() =>

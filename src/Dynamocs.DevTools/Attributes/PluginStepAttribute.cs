@@ -13,9 +13,5 @@ namespace Dynamocs.DevTools
 			MessageName = messageName;
 			EntityName = entityName;
 		}
-
-		public bool IsMatch(string messageName, string entityName) => // todo move out
-			string.Equals(MessageName, messageName, StringComparison.InvariantCultureIgnoreCase) &&
-			string.Equals(EntityName, entityName, StringComparison.InvariantCultureIgnoreCase);
 	}
 }

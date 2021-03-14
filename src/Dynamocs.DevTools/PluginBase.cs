@@ -53,7 +53,8 @@ namespace Dynamocs.DevTools
 		private void ValidateTrigger(PluginContext context)
 		{
 			if (!GetType().GetAttributes<PluginStepAttribute>()
-				.Any(step => step.IsMatch(context.MessageName, context.EntityName)))
+				.Any(step => string.Equals(step.MessageName, context.MessageName, StringComparison.InvariantCultureIgnoreCase) &&
+							 string.Equals(step.EntityName, context.EntityName, StringComparison.InvariantCultureIgnoreCase)))
 			{
 				throw new InvalidPluginExecutionException(
 					$"Error: {PluginName} does not have any {nameof(PluginStepAttribute)} " +
