@@ -13,7 +13,7 @@ namespace Dynamocs.DevTools.Tests.Plugins
 			context.Trace("looool");
 
 			var target = context.Target.ToEntity<Account>();
-			var service = context.OrgService;
+			var service = context.OrganizationService;
 
 			target.Name = "foo";
 

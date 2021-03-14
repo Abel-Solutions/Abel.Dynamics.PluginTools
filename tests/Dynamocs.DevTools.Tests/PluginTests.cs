@@ -3,8 +3,8 @@ using Microsoft.Xrm.Sdk;
 using NSubstitute;
 using System;
 using Dynamocs.DevTools.Extensions;
-using Dynamocs.DevTools.Tests.Extensions;
 using Dynamocs.DevTools.Tests.Models;
+using Dynamocs.TestTools.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 

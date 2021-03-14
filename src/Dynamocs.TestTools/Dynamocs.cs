@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dynamocs.DevTools;
 using Dynamocs.DevTools.Attributes;
 using Dynamocs.DevTools.Enums;
 using Dynamocs.DevTools.Extensions;
+using Dynamocs.TestTools.Extensions;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;
@@ -44,13 +44,6 @@ namespace Dynamocs.TestTools
 			where TPlugin : IPlugin =>
 			ExecutePlugin(typeof(TPlugin), target, messageName, stage, userId);
 
-		public void ExecutePlugin(Type pluginType, Entity target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
-		{
-			SetupExecutionContext(target, messageName, stage, userId);
-
-			((IPlugin)Activator.CreateInstance(pluginType)).Execute(ServiceProvider);
-		}
-
 		public void Initialize(params Entity[] records) => records.ToList().ForEach(AddRecord);
 
 		public TEntity GetRecord<TEntity>()
@@ -77,6 +70,13 @@ namespace Dynamocs.TestTools
 		public void RegisterPlugin<TPlugin>(string messageName, string entityName) =>
 			_steps.Add((messageName, entityName, typeof(TPlugin)));
 
+		private void ExecutePlugin(Type pluginType, Entity target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
+		{
+			SetupExecutionContext(target, messageName, stage.Value, userId ?? _userId);
+
+			((IPlugin)Activator.CreateInstance(pluginType)).Execute(ServiceProvider);
+		}
+
 		private void AddRecord(Entity entity)
 		{
 			entity.Id = entity.Id == Guid.Empty ? Guid.NewGuid() : entity.Id;
@@ -89,7 +89,7 @@ namespace Dynamocs.TestTools
 			{
 				AddRecord(entity);
 				TriggerPlugins("create", entity);
-			})).Returns(args => args.Arg<Entity>().Id);
+			})).Returns((Entity entity) => entity.Id);
 
 			OrganizationService.Update(Arg.Do<Entity>(entity =>
 			{
@@ -100,22 +100,21 @@ namespace Dynamocs.TestTools
 			OrganizationService.Delete(Arg.Any<string>(), Arg.Do<Guid>(id => _records.Remove(id)));
 
 			OrganizationService.Retrieve(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<ColumnSet>())
-				.Returns(args => _records[args.Arg<Guid>()]);
+				.Returns((Guid id) => _records[id]);
 
 			OrganizationService.RetrieveMultiple(Arg.Any<QueryByAttribute>())
-				.Returns(args => _records.Select(r => r.Value).Where(r => IsMatch(r, args.Arg<QueryByAttribute>())).ToEntityCollection());
+				.Returns((QueryByAttribute query) => _records
+					.Select(r => r.Value)
+					.Where(entity => entity.LogicalName == query.EntityName &&
+									 !query.Attributes.Where((t, i) => !entity.Contains(t) || entity[t] != query.Values[i]).Any())
+					.ToEntityCollection());
 		}
 
-		private void TriggerPlugins(string messageName, Entity entity) =>
-			_steps
-				.Where(step => string.Equals(step.messageName, messageName, StringComparison.InvariantCultureIgnoreCase) &&
-							   string.Equals(step.entityName, entity.LogicalName, StringComparison.InvariantCultureIgnoreCase))
-				.Select(s => s.pluginType)
-				.ForEach(pluginType => ExecutePlugin(pluginType, entity, messageName));
-
-		private static bool IsMatch(Entity entity, QueryByAttribute query) =>
-			entity.LogicalName == query.EntityName &&
-			!query.Attributes.Where((t, i) => !entity.Contains(t) || entity[t] != query.Values[i]).Any();
+		private void TriggerPlugins(string messageName, Entity entity) => _steps
+			.Where(step => string.Equals(step.messageName, messageName, StringComparison.InvariantCultureIgnoreCase) &&
+						   string.Equals(step.entityName, entity.LogicalName, StringComparison.InvariantCultureIgnoreCase))
+			.Select(s => s.pluginType)
+			.ForEach(pluginType => ExecutePlugin(pluginType, entity, messageName));
 
 		private void SetupServiceProvider()
 		{
@@ -129,15 +128,19 @@ namespace Dynamocs.TestTools
 				.Returns(ServiceFactory);
 		}
 
-		private void SetupExecutionContext(Entity target, string messageName, PluginStage? stage, Guid? userId)
+		private void SetupExecutionContext(Entity target, string messageName, PluginStage stage, Guid userId)
 		{
 			ExecutionContext.InputParameters.Returns(new ParameterCollection { { "Target", target } });
+
+			ExecutionContext.PrimaryEntityName.Returns(target.LogicalName);
+
+			ExecutionContext.PrimaryEntityId.Returns(target.Id);
 
 			ExecutionContext.MessageName.Returns(messageName);
 
 			ExecutionContext.Stage.Returns((int)stage);
 
-			ExecutionContext.UserId.Returns(userId ?? _userId);
+			ExecutionContext.UserId.Returns(userId);
 
 			ExecutionContext.Depth.Returns(ExecutionContext.Depth + 1);
 		}

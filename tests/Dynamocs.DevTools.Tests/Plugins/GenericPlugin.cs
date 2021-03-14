@@ -12,7 +12,7 @@ namespace Dynamocs.DevTools.Tests.Plugins
 			context.Trace("looool");
 
 			var target = context.Target;
-			var service = context.OrgService;
+			var service = context.OrganizationService;
 
 			target.Name = "foo";
 

@@ -8,10 +8,9 @@ namespace Dynamocs.DevTools
 	public class PluginContext<TEntity>
 		where TEntity : Entity
 	{
-		public TEntity Target => GetInputParameter<Entity>("Target")
-			.ToEntity<TEntity>();
+		public IOrganizationService OrganizationService { get; }
 
-		public IOrganizationService OrgService { get; }
+		public TEntity Target { get; }
 
 		public string MessageName => _executionContext.MessageName;
 
@@ -33,8 +32,11 @@ namespace Dynamocs.DevTools
 
 			_executionContext = serviceProvider.GetService<IPluginExecutionContext>();
 
-			OrgService = serviceProvider.GetService<IOrganizationServiceFactory>()
+			OrganizationService = serviceProvider.GetService<IOrganizationServiceFactory>()
 				.CreateOrganizationService(UserId);
+
+			Target = GetInputParameter<Entity>("Target")
+				.ToEntity<TEntity>();
 		}
 
 		public T GetInputParameter<T>(string name) =>
