@@ -12,7 +12,7 @@ public class GenericPlugin : Plugin<Account>
 {
 	public override void Execute(PluginContext<Account> context)
 	{
-		target.Name = "foo";
+		context.Target.Name = "foo";
 		context.OrganizationService.Update(target);
 	}
 }
@@ -44,7 +44,7 @@ All overloads have an optional ColumnSet parameter. If it is skipped like above,
 
 ## Test plugins with a fake version of Dynamics
 
-The Dynamocs class works like a fake in-memory version of Dynamics. Changes done to Dynamics via OrganizationService persist throughout the test.
+The Dynamocs class works like a fake in-memory version of Dynamics, and aids in executing plug-ins. Changes done to Dynamics via OrganizationService persist throughout the test.
 
 Execute a plug-in and verify state and method calls:
 
@@ -60,6 +60,8 @@ dynamocs.ExecutePlugin<ChangeNameToBarPlugin>(account);
 Assert.Equal("bar", dynamocs.GetRecord<Account>().Name);
 dynamocs.OrganizationService.Received().Update(Arg.Is<Account>(a => a.Name == "bar"));
 ~~~
+
+The fake Dynamics is built with NSubstitute, hence ```Received()``` and other NSubstitute extensions can be used to verify method calls.
 
 ## Trigger plug-ins by changes in Dynamics
 
