@@ -130,7 +130,7 @@ namespace Abel.Dynamics.PluginTools
 		private void SetupExecutionContext(Entity target, string messageName, PluginStage stage, Guid userId)
 		{
 			ExecutionContext.InputParameters.Returns(new ParameterCollection { { "Target", target } });
-			
+
 			ExecutionContext.PrimaryEntityName.Returns(target.LogicalName);
 
 			ExecutionContext.PrimaryEntityId.Returns(target.Id);
