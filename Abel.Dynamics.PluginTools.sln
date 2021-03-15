@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abel.Dynamics.PluginTools", "src\Dynamocs.DevTools\Abel.Dynamics.PluginTools.csproj", "{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abel.Dynamics.PluginTools", "src\Abel.Dynamics.PluginTools\Abel.Dynamics.PluginTools.csproj", "{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{795C4425-4978-42EC-9B16-7BA8BD4A8E31}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{AD734258-D994-4DAE-9243-638A8E5B5A64}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abel.Dynamics.PluginTools.Tests", "tests\Dynamocs.DevTools.Tests\Abel.Dynamics.PluginTools.Tests.csproj", "{1348630D-74D0-4847-9153-D949C4C46FB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abel.Dynamics.PluginTools.Tests", "tests\Abel.Dynamics.PluginTools.Tests\Abel.Dynamics.PluginTools.Tests.csproj", "{1348630D-74D0-4847-9153-D949C4C46FB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

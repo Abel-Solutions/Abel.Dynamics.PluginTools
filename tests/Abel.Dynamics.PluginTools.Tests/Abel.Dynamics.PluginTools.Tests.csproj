@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Dynamocs.DevTools\Abel.Dynamics.PluginTools.csproj" />
+    <ProjectReference Include="..\..\src\Abel.Dynamics.PluginTools\Abel.Dynamics.PluginTools.csproj" />
   </ItemGroup>
 
 </Project>
