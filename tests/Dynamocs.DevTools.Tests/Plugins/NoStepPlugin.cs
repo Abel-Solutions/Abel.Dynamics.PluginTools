@@ -1,8 +1,8 @@
-﻿using Dynamocs.DevTools.Extensions;
-using Dynamocs.DevTools.Tests.Models;
+﻿using Abel.Dynamics.PluginTools.Extensions;
+using Abel.Dynamics.PluginTools.Tests.Models;
 using Microsoft.Xrm.Sdk;
 
-namespace Dynamocs.DevTools.Tests.Plugins
+namespace Abel.Dynamics.PluginTools.Tests.Plugins
 {
 	public class NoStepPlugin : Plugin
 	{

@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamocs.TestTools", "src\Dynamocs.TestTools\Dynamocs.TestTools.csproj", "{61AE2EAD-BE0E-4BF2-92A2-29557E2E384C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamocs.DevTools", "src\Dynamocs.DevTools\Dynamocs.DevTools.csproj", "{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abel.Dynamics.PluginTools", "src\Dynamocs.DevTools\Abel.Dynamics.PluginTools.csproj", "{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{795C4425-4978-42EC-9B16-7BA8BD4A8E31}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{AD734258-D994-4DAE-9243-638A8E5B5A64}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamocs.DevTools.Tests", "tests\Dynamocs.DevTools.Tests\Dynamocs.DevTools.Tests.csproj", "{1348630D-74D0-4847-9153-D949C4C46FB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abel.Dynamics.PluginTools.Tests", "tests\Dynamocs.DevTools.Tests\Abel.Dynamics.PluginTools.Tests.csproj", "{1348630D-74D0-4847-9153-D949C4C46FB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{61AE2EAD-BE0E-4BF2-92A2-29557E2E384C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61AE2EAD-BE0E-4BF2-92A2-29557E2E384C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{61AE2EAD-BE0E-4BF2-92A2-29557E2E384C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61AE2EAD-BE0E-4BF2-92A2-29557E2E384C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -36,7 +30,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{61AE2EAD-BE0E-4BF2-92A2-29557E2E384C} = {795C4425-4978-42EC-9B16-7BA8BD4A8E31}
 		{33C8EDA4-A7C1-4982-A8AA-D4CA4E647988} = {795C4425-4978-42EC-9B16-7BA8BD4A8E31}
 		{1348630D-74D0-4847-9153-D949C4C46FB5} = {AD734258-D994-4DAE-9243-638A8E5B5A64}
 	EndGlobalSection

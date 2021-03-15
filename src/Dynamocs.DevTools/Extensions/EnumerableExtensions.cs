@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xrm.Sdk;
 
-namespace Dynamocs.DevTools.Extensions
+namespace Abel.Dynamics.PluginTools.Extensions
 {
 	public static class EnumerableExtensions
 	{

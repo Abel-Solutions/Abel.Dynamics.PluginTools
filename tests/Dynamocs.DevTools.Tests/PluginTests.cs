@@ -1,14 +1,13 @@
-using Dynamocs.DevTools.Tests.Plugins;
+using System;
+using Abel.Dynamics.PluginTools.Extensions;
+using Abel.Dynamics.PluginTools.Tests.Models;
+using Abel.Dynamics.PluginTools.Tests.Plugins;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;
-using System;
-using Dynamocs.DevTools.Extensions;
-using Dynamocs.DevTools.Tests.Models;
-using Dynamocs.TestTools.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dynamocs.DevTools.Tests
+namespace Abel.Dynamics.PluginTools.Tests
 {
 	public class PluginTests
 	{
@@ -25,21 +24,21 @@ namespace Dynamocs.DevTools.Tests
 				Name = "lol"
 			};
 
-			var dynamocs = new TestTools.Dynamocs();
-			dynamocs.Initialize(account);
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
 
-			dynamocs.ExecutePlugin<GenericPlugin>(account, "update");
+			dynamicsContext.ExecutePlugin<GenericPlugin>(account, "update");
 
-			var maybeUpdatedAccount = dynamocs.GetRecord<Account>(account.Id);
+			var maybeUpdatedAccount = dynamicsContext.GetRecord<Account>(account.Id);
 			Assert.Equal("foo", maybeUpdatedAccount.Name);
 
-			var maybeCreatedLol = dynamocs.OrganizationService.RetrieveByAttribute<Account>(nameof(Account.Name).ToLower(), "bar2");
+			var maybeCreatedLol = dynamicsContext.OrganizationService.RetrieveByAttribute<Account>(nameof(Account.Name).ToLower(), "bar2");
 			Assert.Equal("bar2", maybeCreatedLol.Name);
 			Assert.NotEqual(Guid.Empty, maybeCreatedLol.Id);
 
-			dynamocs.OrganizationService.Received().Update(Arg.Any<Entity>());
+			dynamicsContext.OrganizationService.Received().Update(Arg.Any<Entity>());
 
-			dynamocs.TracingService.GetTraces().ForEach(_output.WriteLine);
+			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
 		}
 
 		[Fact]
@@ -51,19 +50,19 @@ namespace Dynamocs.DevTools.Tests
 				Name = "lol"
 			};
 
-			var dynamocs = new TestTools.Dynamocs();
-			dynamocs.Initialize(account);
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
 
-			dynamocs.RegisterPlugin<StepPlugin>();
+			dynamicsContext.RegisterPlugin<StepPlugin>();
 
 			account.Name = "foo";
 
-			var ex = Assert.Throws<InvalidPluginExecutionException>(() => dynamocs.OrganizationService.Update(account));
+			var ex = Assert.Throws<InvalidPluginExecutionException>(() => dynamicsContext.OrganizationService.Update(account));
 			Assert.Equal("Plugin depth is at or above max: 5", ex.Message);
 
-			dynamocs.OrganizationService.Received(5).Update(Arg.Is<Account>(a => a.Name == "foo"));
+			dynamicsContext.OrganizationService.Received(5).Update(Arg.Is<Account>(a => a.Name == "foo"));
 
-			dynamocs.TracingService.GetTraces().ForEach(_output.WriteLine);
+			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
 		}
 
 		[Fact]
@@ -75,14 +74,14 @@ namespace Dynamocs.DevTools.Tests
 				Name = "lol"
 			};
 
-			var dynamocs = new TestTools.Dynamocs();
-			dynamocs.Initialize(account);
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
 
-			dynamocs.ExecutePlugin<NoStepPlugin>(account, "update");
+			dynamicsContext.ExecutePlugin<NoStepPlugin>(account, "update");
 			
-			dynamocs.OrganizationService.Received().Update(Arg.Any<Entity>());
+			dynamicsContext.OrganizationService.Received().Update(Arg.Any<Entity>());
 
-			dynamocs.TracingService.GetTraces().ForEach(_output.WriteLine);
+			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
 		}
 	}
 }

@@ -1,9 +1,9 @@
-﻿using Dynamocs.DevTools.Attributes;
-using Dynamocs.DevTools.Extensions;
-using Dynamocs.DevTools.Tests.Models;
+﻿using Abel.Dynamics.PluginTools.Attributes;
+using Abel.Dynamics.PluginTools.Extensions;
+using Abel.Dynamics.PluginTools.Tests.Models;
 using Microsoft.Xrm.Sdk;
 
-namespace Dynamocs.DevTools.Tests.Plugins
+namespace Abel.Dynamics.PluginTools.Tests.Plugins
 {
 	[PluginStep("update", "account")]
 	public class StepPlugin : Plugin

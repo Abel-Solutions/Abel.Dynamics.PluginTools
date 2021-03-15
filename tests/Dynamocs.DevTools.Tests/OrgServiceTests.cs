@@ -1,12 +1,12 @@
 using System;
-using Dynamocs.DevTools.Extensions;
-using Dynamocs.DevTools.Tests.Models;
+using Abel.Dynamics.PluginTools.Extensions;
+using Abel.Dynamics.PluginTools.Tests.Models;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;
 using Xunit;
 
-namespace Dynamocs.DevTools.Tests
+namespace Abel.Dynamics.PluginTools.Tests
 {
 	public class OrgServiceTests
 	{
@@ -18,13 +18,13 @@ namespace Dynamocs.DevTools.Tests
 				Id = Guid.NewGuid()
 			};
 
-			var dynamocs = new TestTools.Dynamocs();
-			dynamocs.Initialize(account);
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
 
-			var retrievedAccount = dynamocs.OrganizationService.Retrieve("account", account.Id);
+			var retrievedAccount = dynamicsContext.OrganizationService.Retrieve("account", account.Id);
 			Assert.Equal(account.Id, retrievedAccount.Id);
 
-			dynamocs.OrganizationService.Received().Retrieve("account", account.Id, Arg.Any<ColumnSet>());
+			dynamicsContext.OrganizationService.Received().Retrieve("account", account.Id, Arg.Any<ColumnSet>());
 		}
 
 		[Fact]
@@ -35,13 +35,13 @@ namespace Dynamocs.DevTools.Tests
 				["name"] = "lol"
 			};
 
-			var dynamocs = new TestTools.Dynamocs();
-			dynamocs.Initialize(account);
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
 
-			var retrievedAccount = dynamocs.OrganizationService.RetrieveByAttribute("account", "name", "lol");
+			var retrievedAccount = dynamicsContext.OrganizationService.RetrieveByAttribute("account", "name", "lol");
 			Assert.Equal(account.Id, retrievedAccount.Id);
 
-			dynamocs.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryByAttribute>(q => q.EntityName == "account"));
+			dynamicsContext.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryByAttribute>(q => q.EntityName == "account"));
 		}
 
 		[Fact]
@@ -52,13 +52,13 @@ namespace Dynamocs.DevTools.Tests
 				["name"] = "lol"
 			};
 
-			var dynamocs = new TestTools.Dynamocs();
-			dynamocs.Initialize(account);
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
 
-			var retrievedAccount = dynamocs.OrganizationService.RetrieveByAttribute("account", "name", "foo");
+			var retrievedAccount = dynamicsContext.OrganizationService.RetrieveByAttribute("account", "name", "foo");
 			Assert.Null(retrievedAccount);
 
-			dynamocs.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryByAttribute>(q => q.EntityName == "account"));
+			dynamicsContext.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryByAttribute>(q => q.EntityName == "account"));
 		}
 
 		[Fact]
@@ -69,13 +69,13 @@ namespace Dynamocs.DevTools.Tests
 				Name = "Kåre"
 			};
 
-			var dynamocs = new TestTools.Dynamocs();
-			dynamocs.Initialize(account);
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
 
-			var retrievedAccount = dynamocs.OrganizationService.RetrieveByAttribute<Account>("name", "Kåre");
+			var retrievedAccount = dynamicsContext.OrganizationService.RetrieveByAttribute<Account>("name", "Kåre");
 			Assert.Equal(account.Name, retrievedAccount.Name);
 
-			dynamocs.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryByAttribute>(q =>
+			dynamicsContext.OrganizationService.Received().RetrieveMultiple(Arg.Is<QueryByAttribute>(q =>
 				q.EntityName == "account" && q.Attributes.Contains("name") && q.Values.Contains("Kåre")));
 		}
 	}
