@@ -23,36 +23,23 @@ namespace Abel.Dynamics.PluginTools
 		{
 			var context = new PluginContext<TEntity>(serviceProvider);
 
-			context.Trace($"Start of {PluginName}");
+			TraceMetadata(context);
 
+			ValidateDepth(context);
+
+			ValidateTrigger(context);
+
+			TryToExecute(context);
+		}
+
+		private void TraceMetadata(PluginContext<TEntity> context)
+		{
+			context.Trace($"Start of {PluginName}");
 			context.Trace($"Message name: {context.MessageName}");
 			context.Trace($"Entity name: {context.EntityName}");
 			context.Trace($"User ID: {context.UserId}");
 			context.Trace($"Stage: {context.Stage}");
 			context.Trace($"Depth: {context.Depth}");
-
-			try
-			{
-				ValidateDepth(context);
-
-				ValidateTrigger(context);
-
-				Execute(context);
-			}
-			catch (InvalidPluginExecutionException ex)
-			{
-				context.Trace(ex.ToString());
-				throw;
-			}
-			catch (Exception ex)
-			{
-				context.Trace(ex.ToString());
-				throw new InvalidPluginExecutionException(ex.Message, ex);
-			}
-			finally
-			{
-				context.Trace($"End of {PluginName}");
-			}
 		}
 
 		private static void ValidateDepth(PluginContext<TEntity> context)
@@ -73,6 +60,28 @@ namespace Abel.Dynamics.PluginTools
 				throw new InvalidPluginExecutionException(
 					$"Error: {PluginName} does not have any {nameof(PluginStepAttribute)} " +
 					$"with MessageName {context.MessageName} and EntityName {context.EntityName}");
+			}
+		}
+
+		private void TryToExecute(PluginContext<TEntity> context)
+		{
+			try
+			{
+				Execute(context);
+			}
+			catch (InvalidPluginExecutionException ex)
+			{
+				context.Trace(ex.ToString());
+				throw;
+			}
+			catch (Exception ex)
+			{
+				context.Trace(ex.ToString());
+				throw new InvalidPluginExecutionException(ex.Message, ex);
+			}
+			finally
+			{
+				context.Trace($"End of {PluginName}");
 			}
 		}
 	}

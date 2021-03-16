@@ -2,6 +2,7 @@ using System;
 using Abel.Dynamics.PluginTools.Extensions;
 using Abel.Dynamics.PluginTools.Tests.Models;
 using Abel.Dynamics.PluginTools.Tests.Plugins;
+using FluentAssertions;
 using Microsoft.Xrm.Sdk;
 using NSubstitute;
 using Xunit;
@@ -16,29 +17,22 @@ namespace Abel.Dynamics.PluginTools.Tests
 		public PluginTests(ITestOutputHelper output) => _output = output;
 
 		[Fact]
-		public void ExecutePlugin_ValidTrigger_UpdateWasCalled()
+		public void ExecutePlugin_ValidTrigger_AccountNameIsUpdated()
 		{
-			var account = new Account
+			var account = new Entity("account")
 			{
-				Id = Guid.NewGuid(),
-				Name = "lol"
+				Id = Guid.NewGuid()
 			};
 
 			var dynamicsContext = new DynamicsContext();
 			dynamicsContext.Initialize(account);
 
-			dynamicsContext.ExecutePlugin<GenericPlugin>(account, "update");
+			dynamicsContext.ExecutePlugin<NonGenericPlugin>(account, "update");
 
-			var maybeUpdatedAccount = dynamicsContext.GetRecord<Account>(account.Id);
-			Assert.Equal("foo", maybeUpdatedAccount.Name);
+			account["name"].Should().Be("foo");
+			dynamicsContext.OrganizationService.Received().Update(Arg.Is<Entity>(a => a.GetAttributeValue<string>("name") == "foo"));
 
-			var maybeCreatedLol = dynamicsContext.OrganizationService.RetrieveByAttribute<Account>(nameof(Account.Name).ToLower(), "bar2");
-			Assert.Equal("bar2", maybeCreatedLol.Name);
-			Assert.NotEqual(Guid.Empty, maybeCreatedLol.Id);
-
-			dynamicsContext.OrganizationService.Received().Update(Arg.Any<Entity>());
-
-			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
+			WriteTraces(dynamicsContext);
 		}
 
 		[Fact]
@@ -53,11 +47,10 @@ namespace Abel.Dynamics.PluginTools.Tests
 			var dynamicsContext = new DynamicsContext();
 			dynamicsContext.Initialize(account);
 
-			var ex = Assert.Throws<InvalidPluginExecutionException>(() =>
-				dynamicsContext.ExecutePlugin<GenericPlugin>(account, "create"));
-			Assert.Equal("Error: GenericPlugin does not have any PluginStepAttribute with MessageName create and EntityName account", ex.Message);
+			FluentActions.Invoking(() => dynamicsContext.ExecutePlugin<GenericPlugin>(account, "woop")).Should().Throw<InvalidPluginExecutionException>()
+				.WithMessage($"Error: {nameof(GenericPlugin)} does not have any PluginStepAttribute with MessageName woop and EntityName account");
 
-			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
+			WriteTraces(dynamicsContext);
 		}
 
 		[Fact]
@@ -72,15 +65,15 @@ namespace Abel.Dynamics.PluginTools.Tests
 			var dynamicsContext = new DynamicsContext();
 			dynamicsContext.Initialize(account);
 
-			dynamicsContext.ExecutePlugin<NoStepPlugin>(account, "update");
+			dynamicsContext.ExecutePlugin<NoStepsPlugin>(account, "update");
 
-			dynamicsContext.OrganizationService.Received().Update(Arg.Any<Entity>());
+			dynamicsContext.OrganizationService.Received().Update(Arg.Is<Account>(a => a.Name == "foo"));
 
-			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
+			WriteTraces(dynamicsContext);
 		}
 
 		[Fact]
-		public void RegisterPlugin_TriggersItself_Throws()
+		public void RegisterPlugin_ValidTrigger_AccountNameIsUpdated()
 		{
 			var account = new Account
 			{
@@ -89,18 +82,37 @@ namespace Abel.Dynamics.PluginTools.Tests
 			};
 
 			var dynamicsContext = new DynamicsContext();
-			dynamicsContext.Initialize(account);
 
-			dynamicsContext.RegisterPlugin<StepPlugin>();
+			dynamicsContext.RegisterPlugin<NoStepsPlugin>("create", "account");
+			dynamicsContext.OrganizationService.Create(account);
 
-			account.Name = "foo";
+			account.Name.Should().Be("foo");
+			dynamicsContext.OrganizationService.Received().Update(Arg.Is<Account>(a => a.Name == "foo"));
 
-			var ex = Assert.Throws<InvalidPluginExecutionException>(() => dynamicsContext.OrganizationService.Update(account));
-			Assert.Equal("Plugin depth is at or above max: 5", ex.Message);
+			WriteTraces(dynamicsContext);
+		}
 
+		[Fact]
+		public void RegisterPlugin_TriggersItself_Throws()
+		{
+			var account = new Account
+			{
+				Id = Guid.NewGuid(),
+				Name = "bar"
+			};
+
+			var dynamicsContext = new DynamicsContext();
+
+			dynamicsContext.RegisterPlugin<GenericPlugin>();
+
+			FluentActions.Invoking(() => dynamicsContext.OrganizationService.Create(account)).Should().Throw<InvalidPluginExecutionException>()
+				.WithMessage("Plugin depth is at or above max: 5");
 			dynamicsContext.OrganizationService.Received(5).Update(Arg.Is<Account>(a => a.Name == "foo"));
 
-			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
+			WriteTraces(dynamicsContext);
 		}
+
+		private void WriteTraces(DynamicsContext dynamicsContext) =>
+			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
 	}
 }

@@ -1,11 +1,8 @@
-﻿using Abel.Dynamics.PluginTools.Attributes;
-using Abel.Dynamics.PluginTools.Tests.Models;
+﻿using Abel.Dynamics.PluginTools.Tests.Models;
 
 namespace Abel.Dynamics.PluginTools.Tests.Plugins
 {
-	[PluginStep("create", "account")]
-	[PluginStep("update", "account")]
-	public class GenericPlugin : Plugin<Account>
+	public class NoStepsPlugin : Plugin<Account>
 	{
 		public override void Execute(PluginContext<Account> context)
 		{
