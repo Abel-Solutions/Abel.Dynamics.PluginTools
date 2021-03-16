@@ -43,7 +43,7 @@ namespace Abel.Dynamics.PluginTools
 			where TPlugin : IPlugin =>
 			ExecutePlugin(typeof(TPlugin), target, messageName, stage, userId);
 
-		public void Initialize(params Entity[] records) => records.ToList().ForEach(AddRecord);
+		public void Initialize(params Entity[] records) => records.ForEach(AddRecord);
 
 		public TEntity GetRecord<TEntity>()
 			where TEntity : Entity =>
@@ -63,7 +63,7 @@ namespace Abel.Dynamics.PluginTools
 			_records.Select(r => r.Value).Where(r => r.LogicalName == entityName);
 
 		public void RegisterPlugin<TPlugin>() =>
-			typeof(TPlugin).GetAttributes<PluginStepAttribute>().ToList()
+			typeof(TPlugin).GetAttributes<PluginStepAttribute>()
 				.ForEach(s => RegisterPlugin<TPlugin>(s.MessageName, s.EntityName));
 
 		public void RegisterPlugin<TPlugin>(string messageName, string entityName) =>

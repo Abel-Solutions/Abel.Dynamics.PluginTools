@@ -16,7 +16,7 @@ namespace Abel.Dynamics.PluginTools.Tests
 		public PluginTests(ITestOutputHelper output) => _output = output;
 
 		[Fact]
-		public void ExecutePlugin_VerifyUpdateWasCalled()
+		public void ExecutePlugin_ValidTrigger_UpdateWasCalled()
 		{
 			var account = new Account
 			{
@@ -42,7 +42,45 @@ namespace Abel.Dynamics.PluginTools.Tests
 		}
 
 		[Fact]
-		public void TriggerPlugin_TriggersItself_Throws()
+		public void ExecutePlugin_InvalidTrigger_Throws()
+		{
+			var account = new Account
+			{
+				Id = Guid.NewGuid(),
+				Name = "lol"
+			};
+
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
+
+			var ex = Assert.Throws<InvalidPluginExecutionException>(() =>
+				dynamicsContext.ExecutePlugin<GenericPlugin>(account, "create"));
+			Assert.Equal("Error: GenericPlugin does not have any PluginStepAttribute with MessageName create and EntityName account", ex.Message);
+
+			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
+		}
+
+		[Fact]
+		public void ExecutePlugin_NoStepAttributes_DoesNotThrow()
+		{
+			var account = new Account
+			{
+				Id = Guid.NewGuid(),
+				Name = "lol"
+			};
+
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
+
+			dynamicsContext.ExecutePlugin<NoStepPlugin>(account, "update");
+
+			dynamicsContext.OrganizationService.Received().Update(Arg.Any<Entity>());
+
+			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
+		}
+
+		[Fact]
+		public void RegisterPlugin_TriggersItself_Throws()
 		{
 			var account = new Account
 			{
@@ -61,25 +99,6 @@ namespace Abel.Dynamics.PluginTools.Tests
 			Assert.Equal("Plugin depth is at or above max: 5", ex.Message);
 
 			dynamicsContext.OrganizationService.Received(5).Update(Arg.Is<Account>(a => a.Name == "foo"));
-
-			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
-		}
-
-		[Fact]
-		public void ExecutePlugin_NoStepAttributes_DoesNotThrow()
-		{
-			var account = new Account
-			{
-				Id = Guid.NewGuid(),
-				Name = "lol"
-			};
-
-			var dynamicsContext = new DynamicsContext();
-			dynamicsContext.Initialize(account);
-
-			dynamicsContext.ExecutePlugin<NoStepPlugin>(account, "update");
-			
-			dynamicsContext.OrganizationService.Received().Update(Arg.Any<Entity>());
 
 			dynamicsContext.TracingService.GetTraces().ForEach(_output.WriteLine);
 		}
