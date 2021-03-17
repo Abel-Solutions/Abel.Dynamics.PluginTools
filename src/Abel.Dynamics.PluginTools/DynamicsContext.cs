@@ -39,7 +39,7 @@ namespace Abel.Dynamics.PluginTools
 			ExecutionContext.Depth.Returns(-1); // todo ugly
 		}
 
-		public void ExecutePlugin<TPlugin>(Entity target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
+		public void ExecutePlugin<TPlugin>(object target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
 			where TPlugin : IPlugin =>
 			ExecutePlugin(typeof(TPlugin), target, messageName, stage, userId);
 
@@ -69,7 +69,7 @@ namespace Abel.Dynamics.PluginTools
 		public void RegisterPlugin<TPlugin>(string messageName, string entityName) =>
 			_steps.Add((messageName, entityName, typeof(TPlugin)));
 
-		private void ExecutePlugin(Type pluginType, Entity target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
+		private void ExecutePlugin(Type pluginType, object target, string messageName = "create", PluginStage? stage = PluginStage.PostOperation, Guid? userId = null)
 		{
 			SetupExecutionContext(target, messageName, stage.Value, userId ?? _userId);
 
@@ -127,13 +127,13 @@ namespace Abel.Dynamics.PluginTools
 				.Returns(ServiceFactory);
 		}
 
-		private void SetupExecutionContext(Entity target, string messageName, PluginStage stage, Guid userId)
+		private void SetupExecutionContext(object target, string messageName, PluginStage stage, Guid userId)
 		{
 			ExecutionContext.InputParameters.Returns(new ParameterCollection { { "Target", target } });
 
-			ExecutionContext.PrimaryEntityName.Returns(target.LogicalName);
+			ExecutionContext.PrimaryEntityName.Returns(target.GetValue<string>("LogicalName"));
 
-			ExecutionContext.PrimaryEntityId.Returns(target.Id);
+			ExecutionContext.PrimaryEntityId.Returns(target.GetValue<Guid>("Id"));
 
 			ExecutionContext.MessageName.Returns(messageName);
 

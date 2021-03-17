@@ -17,7 +17,7 @@ namespace Abel.Dynamics.PluginTools.Tests
 		public PluginTests(ITestOutputHelper output) => _output = output;
 
 		[Fact]
-		public void ExecutePlugin_ValidTrigger_AccountNameIsUpdated()
+		public void ExecutePlugin_NonGenericPlugin_Ok()
 		{
 			var account = new Entity("account")
 			{
@@ -73,7 +73,25 @@ namespace Abel.Dynamics.PluginTools.Tests
 		}
 
 		[Fact]
-		public void RegisterPlugin_ValidTrigger_AccountNameIsUpdated()
+		public void ExecutePlugin_EntityReferenceTarget_Ok()
+		{
+			var account = new Account
+			{
+				Id = Guid.NewGuid()
+			};
+
+			var dynamicsContext = new DynamicsContext();
+			dynamicsContext.Initialize(account);
+
+			dynamicsContext.ExecutePlugin<EntityReferencePlugin>(account.ToEntityReference(), "woop");
+
+			dynamicsContext.OrganizationService.Received().Update(Arg.Is<Account>(a => a.Name == "foo"));
+
+			WriteTraces(dynamicsContext);
+		}
+
+		[Fact]
+		public void RegisterPlugin_NoStepsPlugin_Ok()
 		{
 			var account = new Account
 			{

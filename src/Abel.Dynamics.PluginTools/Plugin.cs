@@ -10,18 +10,17 @@ namespace Abel.Dynamics.PluginTools
 	{
 	}
 
-	public abstract class Plugin<TEntity> : IPlugin
-		where TEntity : Entity
+	public abstract class Plugin<TTarget> : IPlugin
 	{
 		public const int MaxDepth = 5; // todo config
 
 		public string PluginName => GetType().Name;
 
-		public abstract void Execute(PluginContext<TEntity> context);
+		public abstract void Execute(PluginContext<TTarget> context);
 
 		public void Execute(IServiceProvider serviceProvider)
 		{
-			var context = new PluginContext<TEntity>(serviceProvider);
+			var context = new PluginContext<TTarget>(serviceProvider);
 
 			TraceMetadata(context);
 
@@ -32,7 +31,7 @@ namespace Abel.Dynamics.PluginTools
 			TryToExecute(context);
 		}
 
-		private void TraceMetadata(PluginContext<TEntity> context)
+		private void TraceMetadata(PluginContext<TTarget> context)
 		{
 			context.Trace($"Start of {PluginName}");
 			context.Trace($"Message name: {context.MessageName}");
@@ -42,7 +41,7 @@ namespace Abel.Dynamics.PluginTools
 			context.Trace($"Depth: {context.Depth}");
 		}
 
-		private static void ValidateDepth(PluginContext<TEntity> context)
+		private static void ValidateDepth(PluginContext<TTarget> context)
 		{
 			if (context.Depth >= MaxDepth)
 			{
@@ -50,7 +49,7 @@ namespace Abel.Dynamics.PluginTools
 			}
 		}
 
-		private void ValidateTrigger(PluginContext<TEntity> context)
+		private void ValidateTrigger(PluginContext<TTarget> context)
 		{
 			if (GetType().GetAttributes<PluginStepAttribute>() is var steps &&
 				steps.Any() &&
@@ -63,7 +62,7 @@ namespace Abel.Dynamics.PluginTools
 			}
 		}
 
-		private void TryToExecute(PluginContext<TEntity> context)
+		private void TryToExecute(PluginContext<TTarget> context)
 		{
 			try
 			{
