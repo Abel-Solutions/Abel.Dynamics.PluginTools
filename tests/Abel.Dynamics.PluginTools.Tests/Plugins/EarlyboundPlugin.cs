@@ -5,11 +5,11 @@ namespace Abel.Dynamics.PluginTools.Tests.Plugins
 {
 	[PluginStep("create", "account")]
 	[PluginStep("update", "account")]
-	public class GenericPlugin : Plugin<Account>
+	public class EarlyboundPlugin : Plugin
 	{
-		public override void Execute(PluginContext<Account> context)
+		public override void Execute(PluginContext context)
 		{
-			var account = context.Target;
+			var account = context.GetTarget<Account>();
 
 			account.Name = "foo";
 

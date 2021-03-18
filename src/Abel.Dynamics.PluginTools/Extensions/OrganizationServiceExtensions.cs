@@ -55,7 +55,7 @@ namespace Abel.Dynamics.PluginTools.Extensions
 			orgService.Retrieve(Activator.CreateInstance<TEntity>().LogicalName, id, columnSet ?? new ColumnSet(true))
 				.ToEntity<TEntity>();
 
-		public static Entity Retrieve<TEntity>(this IOrganizationService orgService, EntityReference entityReference, ColumnSet columnSet = null)
+		public static TEntity Retrieve<TEntity>(this IOrganizationService orgService, EntityReference entityReference, ColumnSet columnSet = null)
 			where TEntity : Entity =>
 			Retrieve(orgService, entityReference, columnSet).ToEntity<TEntity>();
 
