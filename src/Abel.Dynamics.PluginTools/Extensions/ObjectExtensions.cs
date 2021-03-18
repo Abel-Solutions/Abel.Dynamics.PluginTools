@@ -7,7 +7,7 @@ namespace Abel.Dynamics.PluginTools.Extensions
 {
 	public static class ObjectExtensions
 	{
-		public static ConfiguredCall Returns<TArg, TReturn>(this object obj, Func<TArg, TReturn> func) =>
+		public static ConfiguredCall Returns<TArg, TResult>(this object obj, Func<TArg, TResult> func) =>
 			obj.Returns(args => func(args.Arg<TArg>()));
 
 		public static TResult InvokeMethod<TResult>(this object obj, string methodName, params object[] parameters) =>
@@ -29,6 +29,19 @@ namespace Abel.Dynamics.PluginTools.Extensions
 			}
 
 			return default;
+		}
+
+		public static void SetValue(this object obj, string name, object value)
+		{
+			if (obj.GetType().GetField(name) is var field && field != null)
+			{
+				field.SetValue(obj, value);
+			}
+
+			if (obj.GetType().GetProperty(name) is var prop && prop != null)
+			{
+				prop.SetValue(obj, value, null);
+			}
 		}
 	}
 }
