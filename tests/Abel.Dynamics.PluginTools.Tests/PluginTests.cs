@@ -17,7 +17,7 @@ namespace Abel.Dynamics.PluginTools.Tests
 		public PluginTests(ITestOutputHelper output) => _output = output;
 
 		[Fact]
-		public void ExecutePlugin_NonGenericPlugin_Ok()
+		public void ExecutePlugin_Latebound_UpdatesAccountName()
 		{
 			var account = new Entity("account")
 			{
@@ -27,7 +27,7 @@ namespace Abel.Dynamics.PluginTools.Tests
 			var dynamicsContext = new DynamicsContext();
 			dynamicsContext.Initialize(account);
 
-			dynamicsContext.ExecutePlugin<NonGenericPlugin>(account, "update");
+			dynamicsContext.ExecutePlugin<LateboundPlugin>(account, "update");
 
 			account["name"].Should().Be("foo");
 			dynamicsContext.OrganizationService.Received().Update(Arg.Is<Entity>(a => a.GetAttributeValue<string>("name") == "foo"));
@@ -47,14 +47,14 @@ namespace Abel.Dynamics.PluginTools.Tests
 			var dynamicsContext = new DynamicsContext();
 			dynamicsContext.Initialize(account);
 
-			FluentActions.Invoking(() => dynamicsContext.ExecutePlugin<GenericPlugin>(account, "woop")).Should().Throw<InvalidPluginExecutionException>()
-				.WithMessage($"Error: {nameof(GenericPlugin)} does not have any PluginStepAttribute with MessageName woop and EntityName account");
+			FluentActions.Invoking(() => dynamicsContext.ExecutePlugin<EarlyboundPlugin>(account, "woop")).Should().Throw<InvalidPluginExecutionException>()
+				.WithMessage($"Error: {nameof(EarlyboundPlugin)} does not have any PluginStepAttribute with MessageName woop and EntityName account");
 
 			WriteTraces(dynamicsContext);
 		}
 
 		[Fact]
-		public void ExecutePlugin_NoStepAttributes_DoesNotThrow()
+		public void ExecutePlugin_NoStepAttributes_UpdatesAccountName()
 		{
 			var account = new Account
 			{
@@ -73,25 +73,7 @@ namespace Abel.Dynamics.PluginTools.Tests
 		}
 
 		[Fact]
-		public void ExecutePlugin_EntityReferenceTarget_Ok()
-		{
-			var account = new Account
-			{
-				Id = Guid.NewGuid()
-			};
-
-			var dynamicsContext = new DynamicsContext();
-			dynamicsContext.Initialize(account);
-
-			dynamicsContext.ExecutePlugin<EntityReferencePlugin>(account.ToEntityReference(), "woop");
-
-			dynamicsContext.OrganizationService.Received().Update(Arg.Is<Account>(a => a.Name == "foo"));
-
-			WriteTraces(dynamicsContext);
-		}
-
-		[Fact]
-		public void RegisterPlugin_NoStepsPlugin_Ok()
+		public void RegisterPlugin_NoStepsPlugin_UpdatesAccountName()
 		{
 			var account = new Account
 			{
@@ -121,7 +103,7 @@ namespace Abel.Dynamics.PluginTools.Tests
 
 			var dynamicsContext = new DynamicsContext();
 
-			dynamicsContext.RegisterPlugin<GenericPlugin>();
+			dynamicsContext.RegisterPlugin<EarlyboundPlugin>();
 
 			FluentActions.Invoking(() => dynamicsContext.OrganizationService.Create(account)).Should().Throw<InvalidPluginExecutionException>()
 				.WithMessage("Plugin depth is at or above max: 5");

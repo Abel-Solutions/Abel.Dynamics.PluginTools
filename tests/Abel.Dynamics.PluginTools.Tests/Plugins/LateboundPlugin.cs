@@ -4,11 +4,11 @@ using Microsoft.Xrm.Sdk;
 namespace Abel.Dynamics.PluginTools.Tests.Plugins
 {
 	[PluginStep("update", "account")]
-	public class NonGenericPlugin : Plugin
+	public class LateboundPlugin : Plugin
 	{
-		public override void Execute(PluginContext<Entity> context)
+		public override void Execute(PluginContext context)
 		{
-			var account = context.Target;
+			var account = context.GetTarget<Entity>();
 
 			account["name"] = "foo";
 

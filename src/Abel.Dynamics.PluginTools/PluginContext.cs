@@ -5,11 +5,9 @@ using Microsoft.Xrm.Sdk;
 
 namespace Abel.Dynamics.PluginTools
 {
-	public class PluginContext<TTarget>
+	public class PluginContext
 	{
 		public IOrganizationService OrganizationService { get; }
-
-		public TTarget Target { get; }
 
 		public string MessageName => _executionContext.MessageName;
 
@@ -33,8 +31,6 @@ namespace Abel.Dynamics.PluginTools
 
 			OrganizationService = serviceProvider.GetService<IOrganizationServiceFactory>()
 				.CreateOrganizationService(UserId);
-
-			Target = GetTarget();
 		}
 
 		public void Trace(string s) => _tracingService.Trace(s);
@@ -44,9 +40,9 @@ namespace Abel.Dynamics.PluginTools
 				? (T)_executionContext.InputParameters[name]
 				: default;
 
-		private TTarget GetTarget() =>
-			typeof(TTarget).IsSubclassOf(typeof(Entity)) ?
-				GetInputParameter<Entity>("Target").ToEntity<TTarget>() :
-				GetInputParameter<TTarget>("Target");
+		public T GetTarget<T>() =>
+			typeof(T).IsSubclassOf(typeof(Entity)) ?
+				GetInputParameter<Entity>("Target").ToEntity<T>() :
+				GetInputParameter<T>("Target");
 	}
 }

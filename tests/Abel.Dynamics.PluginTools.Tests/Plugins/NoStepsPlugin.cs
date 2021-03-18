@@ -2,11 +2,11 @@
 
 namespace Abel.Dynamics.PluginTools.Tests.Plugins
 {
-	public class NoStepsPlugin : Plugin<Account>
+	public class NoStepsPlugin : Plugin
 	{
-		public override void Execute(PluginContext<Account> context)
+		public override void Execute(PluginContext context)
 		{
-			var account = context.Target;
+			var account = context.GetTarget<Account>();
 
 			account.Name = "foo";
 
