@@ -8,11 +8,11 @@ The base class removes boilerplate code. Example plugin:
 
 ~~~
 [PluginStep("update", "account")]
-public class GenericPlugin : Plugin<Account>
+public class TestPlugin : Plugin
 {
-	public override void Execute(PluginContext<Account> context)
+	public override void Execute(PluginContext context)
 	{
-		var account = context.Target;
+		var account = context.GetTarget<Account>();
 		account.Name = "foo";
 		context.OrganizationService.Update(account);
 	}
