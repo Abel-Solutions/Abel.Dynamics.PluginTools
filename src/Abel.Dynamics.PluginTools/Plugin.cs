@@ -1,10 +1,10 @@
-﻿using Microsoft.Xrm.Sdk;
-using System;
+﻿using System;
 using System.Linq;
-using Dynamocs.DevTools.Attributes;
-using Dynamocs.DevTools.Extensions;
+using Abel.Dynamics.PluginTools.Attributes;
+using Abel.Dynamics.PluginTools.Extensions;
+using Microsoft.Xrm.Sdk;
 
-namespace Dynamocs.DevTools
+namespace Abel.Dynamics.PluginTools
 {
 	public abstract class Plugin : Plugin<Entity>
 	{

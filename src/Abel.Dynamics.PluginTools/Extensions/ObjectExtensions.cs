@@ -2,7 +2,7 @@
 using NSubstitute;
 using NSubstitute.Core;
 
-namespace Dynamocs.TestTools.Extensions
+namespace Abel.Dynamics.PluginTools.Extensions
 {
 	public static class ObjectExtensions
 	{

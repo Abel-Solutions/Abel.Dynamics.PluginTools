@@ -1,4 +1,4 @@
-﻿namespace Dynamocs.DevTools.Enums
+﻿namespace Abel.Dynamics.PluginTools.Enums
 {
 	public enum PluginStage
 	{

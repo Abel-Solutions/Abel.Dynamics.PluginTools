@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dynamocs.DevTools.Extensions
+namespace Abel.Dynamics.PluginTools.Extensions
 {
 	public static class ServiceProviderExtensions
 	{

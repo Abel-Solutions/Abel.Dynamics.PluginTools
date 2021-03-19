@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dynamocs.DevTools.Attributes;
-using Dynamocs.DevTools.Enums;
-using Dynamocs.DevTools.Extensions;
-using Dynamocs.TestTools.Extensions;
+using Abel.Dynamics.PluginTools.Attributes;
+using Abel.Dynamics.PluginTools.Enums;
+using Abel.Dynamics.PluginTools.Extensions;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using NSubstitute;
 
-namespace Dynamocs.TestTools
+namespace Abel.Dynamics.PluginTools
 {
-	public class Dynamocs
+	public class DynamicsContext
 	{
 		public ITracingService TracingService { get; } = Substitute.For<ITracingService>();
 
@@ -29,7 +28,7 @@ namespace Dynamocs.TestTools
 
 		private readonly Guid _userId = Guid.NewGuid();
 
-		public Dynamocs()
+		public DynamicsContext()
 		{
 			SetupOrganizationService();
 

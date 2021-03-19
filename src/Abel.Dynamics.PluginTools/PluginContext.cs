@@ -1,9 +1,9 @@
-﻿using Microsoft.Xrm.Sdk;
-using System;
-using Dynamocs.DevTools.Enums;
-using Dynamocs.DevTools.Extensions;
+﻿using System;
+using Abel.Dynamics.PluginTools.Enums;
+using Abel.Dynamics.PluginTools.Extensions;
+using Microsoft.Xrm.Sdk;
 
-namespace Dynamocs.DevTools
+namespace Abel.Dynamics.PluginTools
 {
 	public class PluginContext<TEntity>
 		where TEntity : Entity

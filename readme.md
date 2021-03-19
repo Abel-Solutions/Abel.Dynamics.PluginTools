@@ -1,6 +1,6 @@
-# Dynamocs
+# Abel Dynamics Plug-in Tools
 
-Dynamocs is a suite of tools for developing and testing Dynamics plug-ins.
+Abel Dynamics Plug-in Tools is a suite of tools for developing and testing Dynamics plug-ins.
 
 ## Base class for plug-ins
 
@@ -12,8 +12,9 @@ public class GenericPlugin : Plugin<Account>
 {
 	public override void Execute(PluginContext<Account> context)
 	{
-		context.Target.Name = "foo";
-		context.OrganizationService.Update(target);
+		var account = context.Target;
+		account.Name = "foo";
+		context.OrganizationService.Update(account);
 	}
 }
 ~~~
@@ -44,21 +45,21 @@ All overloads have an optional ColumnSet parameter. If it is skipped like above,
 
 ## Test plugins with a fake version of Dynamics
 
-The Dynamocs class works like a fake in-memory version of Dynamics, and aids in executing plug-ins. Changes done to Dynamics via OrganizationService persist throughout the test.
+The DynamicsContext class works like a fake in-memory version of Dynamics, and aids in executing plug-ins. Changes done to Dynamics via OrganizationService persist throughout the test.
 
 Execute a plug-in and verify state and method calls:
 
 ~~~
-var dynamocs = new Dynamocs();
-dynamocs.Initialize(new Account
+var dynamicsContext = new DynamicsContext();
+dynamicsContext.Initialize(new Account
 {
 	Name = "foo"
 });
 
-dynamocs.ExecutePlugin<ChangeNameToBarPlugin>(account);
+dynamicsContext.ExecutePlugin<ChangeNameToBarPlugin>(account);
 
-Assert.Equal("bar", dynamocs.GetRecord<Account>().Name);
-dynamocs.OrganizationService.Received().Update(Arg.Is<Account>(a => a.Name == "bar"));
+Assert.Equal("bar", dynamicsContext.GetRecord<Account>().Name);
+dynamicsContext.OrganizationService.Received().Update(Arg.Is<Account>(a => a.Name == "bar"));
 ~~~
 
 The fake Dynamics is built with NSubstitute, hence ```Received()``` and other NSubstitute extensions can be used to verify method calls.
@@ -68,13 +69,13 @@ The fake Dynamics is built with NSubstitute, hence ```Received()``` and other NS
 Instead of executing plug-ins directly, they can be triggered by changes in (fake) Dynamics:
 
 ~~~
-dynamocs.RegisterPlugin<TestPlugin>("update", "account");
-dynamocs.OrganizationService.Update(account);
+dynamicsContext.RegisterPlugin<TestPlugin>("update", "account");
+dynamicsContext.OrganizationService.Update(account);
 ~~~
 
 If the plugin has PluginStep attributes, they can be registered automatically:
 
 ~~~
-dynamocs.RegisterPlugin<TestPlugin>();
-dynamocs.OrganizationService.Update(account);
+dynamicsContext.RegisterPlugin<TestPlugin>();
+dynamicsContext.OrganizationService.Update(account);
 ~~~

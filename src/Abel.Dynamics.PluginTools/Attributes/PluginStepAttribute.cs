@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dynamocs.DevTools.Attributes
+namespace Abel.Dynamics.PluginTools.Attributes
 {
 	public class PluginStepAttribute : Attribute
 	{

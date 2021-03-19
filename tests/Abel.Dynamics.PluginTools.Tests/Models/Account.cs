@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 
-namespace Dynamocs.DevTools.Tests.Models
+namespace Abel.Dynamics.PluginTools.Tests.Models
 {
 	[EntityLogicalName("account")]
 	public class Account : Entity

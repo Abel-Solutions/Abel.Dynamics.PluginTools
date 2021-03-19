@@ -1,18 +1,17 @@
-﻿using Dynamocs.DevTools.Attributes;
-using Dynamocs.DevTools.Extensions;
-using Dynamocs.DevTools.Tests.Models;
-using Microsoft.Xrm.Sdk;
+﻿using Abel.Dynamics.PluginTools.Attributes;
+using Abel.Dynamics.PluginTools.Extensions;
+using Abel.Dynamics.PluginTools.Tests.Models;
 
-namespace Dynamocs.DevTools.Tests.Plugins
+namespace Abel.Dynamics.PluginTools.Tests.Plugins
 {
 	[PluginStep("update", "account")]
-	public class StepPlugin : Plugin
+	public class GenericPlugin : Plugin<Account>
 	{
-		public override void Execute(PluginContext<Entity> context)
+		public override void Execute(PluginContext<Account> context)
 		{
 			context.Trace("looool");
 
-			var target = context.Target.ToEntity<Account>();
+			var target = context.Target;
 			var service = context.OrganizationService;
 
 			target.Name = "foo";

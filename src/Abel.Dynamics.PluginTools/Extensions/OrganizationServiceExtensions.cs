@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 
-namespace Dynamocs.DevTools.Extensions
+namespace Abel.Dynamics.PluginTools.Extensions
 {
 	public static class OrganizationServiceExtensions
 	{
